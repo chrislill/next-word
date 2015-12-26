@@ -15,11 +15,42 @@ TokeniseText <- function(documents) {
   #   List containing vectors of words (token.list)
   
   x <- gsub("[^a-zA-Z '-]", " ", documents)
-  x <- gsub("^-|-$|--| -|- | '|' ", " ", x)
+  x <- gsub("^[-']+|[-']+$| [-']+|[-']+ [-']*", " ", x)
   x <- tolower(x)
   x <- trimws(stripWhitespace(x))
   strsplit(x, " ", fixed = TRUE)
 }
+
+
+CreateIndex <- function(word.token.list) {
+  # Creates a vector of all words, sorted alphabetically
+  #
+  # Args:
+  #   word.token.list: A tokenised list, containing vectors of words
+  #
+  # Returns:
+  #   A word vector, to be used as an index
+  
+  words <- sort(unique(unlist(word.token.list, use.names = FALSE)))
+  
+  words
+}
+
+
+Word2Index <- function(words) {
+  # Returns the index for a specific word, using the global variable named 
+  # index.
+  #
+  # Args:
+  #   word: A word from the Corpora
+  #
+  # Returns:
+  #   The index for that word
+  
+  dev.index[dev.index == "word"]
+  
+}
+
 
 
 CountWords <- function(token.list) {
@@ -45,28 +76,30 @@ CountWords <- function(token.list) {
 # TODO: Remove single trigrams
 # TODO: Only keep top 5 next words
 CreateTrigrams <- function(tokens) {
-  # Creates a simple dataframe with a row for each trigram. The first column is
-  # the first two words. The second column is the next word.
+  # Creates a simple matrix with a row for each trigram and a column 
+  # for each word. 
   #
   # Args:
   #   tokens: A vector of words
   #
   # Returns:
-  #   A dataframe with a row for each trigram
+  #   A matrix with a row for each trigram
   
   #tokens <- dev.tokens[[1]]
   
-  bigram <- vector(mode = "character")
-  next.word <- vector(mode = "character")
+  word1 <- vector(mode = "character")
+  word2 <- vector(mode = "character")
+  word3 <- vector(mode = "character")
     
   if(length(tokens) > 2) {
     for(i in 1:(length(tokens) - 2)) {
-      bigram <- append(bigram, paste(tokens[i:(i+1)], collapse = " "))
-      next.word <- append(next.word, tokens[i+2])
+      word1 <- append(word1, tokens[i])
+      word2 <- append(word2, tokens[i+1])
+      word3 <- append(word3, tokens[i+2])
     }
   }
   #data.frame(bigram, next.word, stringsAsFactors = FALSE)
-  matrix(c(bigram, next.word), ncol = 2)
+  matrix(c(word1, word2, word3), ncol = 3)
 }
 
 
@@ -80,7 +113,7 @@ CountTrigrams <- function(token.list) {
   # Returns:
   #   A trigram frequency dataframe
   
-  #token.list <- dev.tokens[1:100]
+  #token.list <- dev2.tokens
   
   trigram.list <- sapply(token.list, 
                          CreateTrigrams, 
@@ -89,12 +122,13 @@ CountTrigrams <- function(token.list) {
   
   trigram.df <- data.frame(do.call(rbind, trigram.list),
                               stringsAsFactors = FALSE)
-  names(trigram.df) <- c("bigram", "next.word")
+  names(trigram.df) <- c("word1", "word2", "word3")
   
   trigram.count <- trigram.df %>%
-    group_by(bigram, next.word) %>%
-    summarise(count = length(bigram)) %>%
-    arrange(bigram, count)
+    group_by(word1, word2, word3) %>%
+    summarise(count = length(word1)) %>%
+    filter(count > 1) %>%
+    arrange(word1, word2, count)
 
   trigram.count
 }

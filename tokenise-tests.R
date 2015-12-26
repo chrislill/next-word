@@ -1,0 +1,10 @@
+library(testthat)
+
+expect_equal(unlist(TokeniseText("Just like")), c("just", "like"))
+expect_equal(unlist(TokeniseText("coast, the")), c("coast", "the"))
+expect_equal(unlist(TokeniseText("don't")), "don't")
+expect_equal(unlist(TokeniseText("thick-walled")), "thick-walled")
+expect_equal(unlist(TokeniseText("thick -walled")), c("thick", "walled"))
+expect_equal(unlist(TokeniseText("thick- walled")), c("thick", "walled"))
+expect_equal(unlist(TokeniseText("-Boston")), "boston")
+expect_equal(unlist(TokeniseText("--Boston")), "boston")

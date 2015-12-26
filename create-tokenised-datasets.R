@@ -35,22 +35,40 @@ boundary <- c(floor(0.6 * length(corpora)),
 set.seed(1234)
 corpora.index <- sample(length(corpora), length(corpora))
 training.corpora <- corpora[corpora.index[1:boundary[1]]]
-test.corpora <- corpora[corpora.index[(boundary[1] + 1):boundary[2]]]                          
-validation.corpora <- corpora[corpora.index[(boundary[2] + 1):boundary[3]]]  
+# test.corpora <- corpora[corpora.index[(boundary[1] + 1):boundary[2]]]                          
+# validation.corpora <- corpora[corpora.index[(boundary[2] + 1):boundary[3]]]  
 dev.corpora <- training.corpora[1:1000]
+dev2.corpora <- training.corpora[1:10000]
+dev3.corpora <- training.corpora[1:100000]
 
 # Tokenise
-training.tokens <- sapply(training.corpora, myTokenise, USE.NAMES = FALSE)
-test.tokens <- sapply(test.corpora, myTokenise, USE.NAMES = FALSE)
-validation.tokens <- sapply(validation.corpora, myTokenise, USE.NAMES = FALSE)
-dev.tokens <- sapply(dev.corpora, myTokenise)
+dev.word.tokens <- sapply(dev.corpora, TokeniseText)
+dev2.word.tokens <- sapply(dev2.corpora, TokeniseText)
+dev3.word.tokens <- sapply(dev3.corpora, TokeniseText)
+# training.word.tokens <- sapply(training.corpora, TokeniseText, USE.NAMES = FALSE)
+# test.word.tokens <- sapply(test.corpora, TokeniseText, USE.NAMES = FALSE)
+# validation.word.tokens <- sapply(validation.corpora, TokeniseText, USE.NAMES = FALSE)
 
+# Index
+dev.index <- CreateIndex(dev.word.tokens)
+dev2.index <- CreateIndex(dev2.word.tokens)
+dev3.index <- CreateIndex(dev3.word.tokens)
+
+# Change Tokens to use index
+index <- dev.index
+dev.tokens <- sapply(dev.word.tokens, match, table = dev.index)
+dev2.tokens <- sapply(dev2.word.tokens, match, table = dev2.index)
+# TODO: Fix paging error with match which causes next line to hang
+# dev3.tokens <- sapply(dev3.word.tokens, match, table = dev3.index)
 
 # Save tokens
 if (!file.exists("data")) {
   dir.create("data")
 }
-save(training.tokens, file = "data\\training-tokens.RData")
-save(test.tokens, file = "data\\test-tokens.RData")
-save(validation.tokens, file = "data\\validation-tokens.RData")
-save(dev.tokens, file = "data\\dev-tokens.RData")
+save(dev.corpora, file = "data\\dev-corpora.RData")
+save(dev.tokens, dev.index, file = "data\\dev-tokens.RData")
+save(dev2.tokens, dev2.index, file = "data\\dev2-tokens.RData")
+# save(dev3.tokens, dev3.index, file = "data\\dev3-tokens.RData")
+# save(training.tokens, file = "data\\training-tokens.RData")
+# save(test.tokens, file = "data\\test-tokens.RData")
+# save(validation.tokens, file = "data\\validation-tokens.RData")
