@@ -23,7 +23,8 @@ TokeniseText <- function(documents) {
 
 
 CreateIndex <- function(word.token.list) {
-  # Creates a vector of all words, sorted alphabetically
+  # Creates a vector of words, omitting words that only occur once 
+  # and sorted alphabetically
   #
   # Args:
   #   word.token.list: A tokenised list, containing vectors of words
@@ -31,26 +32,18 @@ CreateIndex <- function(word.token.list) {
   # Returns:
   #   A word vector, to be used as an index
   
-  words <- sort(unique(unlist(word.token.list, use.names = FALSE)))
+  word <- unlist(word.token.list, use.names = FALSE)
   
-  words
-}
-
-
-Word2Index <- function(words) {
-  # Returns the index for a specific word, using the global variable named 
-  # index.
-  #
-  # Args:
-  #   word: A word from the Corpora
-  #
-  # Returns:
-  #   The index for that word
-  
-  dev.index[dev.index == "word"]
+  word.count <- data.frame(word, stringsAsFactors = FALSE) %>%
+    group_by(word) %>%
+    summarise(count = length(word)) %>%
+    filter(count > 5) %>%
+#    arrange(word)
+  arrange(count)
+    
+  word.count$word
   
 }
-
 
 
 CountWords <- function(token.list) {
@@ -87,9 +80,9 @@ CreateTrigrams <- function(tokens) {
   
   #tokens <- dev.tokens[[1]]
   
-  word1 <- vector(mode = "character")
-  word2 <- vector(mode = "character")
-  word3 <- vector(mode = "character")
+  word1 <- vector(mode = "integer")
+  word2 <- vector(mode = "integer")
+  word3 <- vector(mode = "integer")
     
   if(length(tokens) > 2) {
     for(i in 1:(length(tokens) - 2)) {
@@ -120,8 +113,7 @@ CountTrigrams <- function(token.list) {
                          simplify = "array", 
                          USE.NAMES = FALSE)
   
-  trigram.df <- data.frame(do.call(rbind, trigram.list),
-                              stringsAsFactors = FALSE)
+  trigram.df <- data.frame(do.call(rbind, trigram.list))
   names(trigram.df) <- c("word1", "word2", "word3")
   
   trigram.count <- trigram.df %>%

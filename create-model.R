@@ -31,7 +31,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.before = format(capture.output(mem.before)),
                      mem.after,
                      mem.model,
-                     comment = "Filter out unique trigrams")
+                     comment = "Remove words occuring <6 from index")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)
