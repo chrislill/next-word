@@ -42,35 +42,29 @@ dev2.corpora <- training.corpora[1:10000]
 dev3.corpora <- training.corpora[1:100000]
 
 # Tokenise
-dev.word.tokens <- sapply(dev.corpora, TokeniseText)
-dev2.word.tokens <- sapply(dev2.corpora, TokeniseText)
-dev3.word.tokens <- sapply(dev3.corpora, TokeniseText)
-training.word.tokens <- sapply(training.corpora, TokeniseText, USE.NAMES = FALSE)
-# test.word.tokens <- sapply(test.corpora, TokeniseText, USE.NAMES = FALSE)
-# validation.word.tokens <- sapply(validation.corpora, TokeniseText, USE.NAMES = FALSE)
+dev.tokens <- sapply(dev.corpora, TokeniseText)
+dev2.tokens <- sapply(dev2.corpora, TokeniseText)
+dev3.tokens <- sapply(dev3.corpora, TokeniseText)
+training.tokens <- sapply(training.corpora, TokeniseText, USE.NAMES = FALSE)
+# test.tokens <- sapply(test.corpora, TokeniseText, USE.NAMES = FALSE)
+# validation.tokens <- sapply(validation.corpora, TokeniseText, USE.NAMES = FALSE)
 
-# Index
-dev.index <- CreateIndex(dev.word.tokens)
-dev2.index <- CreateIndex(dev2.word.tokens)
-dev3.index <- CreateIndex(dev3.word.tokens)
-training.index <- CreateIndex(training.word.tokens)
-
-# Change Tokens to use index
-index <- dev.index
-dev.tokens <- sapply(dev.word.tokens, match, table = dev.index, nomatch = 0)
-# dev2.tokens <- sapply(dev2.word.tokens, match, table = dev2.index, nomatch = 0)
-# TODO: Fix paging error with match which causes next line to hang
-# dev3.tokens <- sapply(dev3.word.tokens, match, table = dev3.index, nomatch = 0)
-training.tokens <- sapply(training.word.tokens, match, table = training.index, nomatch = 0)
+# Word Counts
+dev.word.count <- CountWords(dev.tokens)
+dev2.word.count <- CountWords(dev2.tokens)
+dev3.word.count <- CountWords(dev3.tokens)
+training.word.count <- CountWords(training.tokens)
 
 # Save tokens
 if (!file.exists("data")) {
   dir.create("data")
 }
 save(dev.corpora, dev2.corpora, dev3.corpora, file = "data\\dev-corpora.RData")
-save(dev.tokens, dev.index, file = "data\\dev-tokens.RData")
-# save(dev2.tokens, dev2.index, file = "data\\dev2-tokens.RData")
-# save(dev3.tokens, dev3.index, file = "data\\dev3-tokens.RData")
-save(training.tokens, training.index, file = "data\\training-tokens.RData")
-# save(test.tokens, file = "data\\test-tokens.RData")
-# save(validation.tokens, file = "data\\validation-tokens.RData")
+save(dev.tokens, dev.word.count, file = "data\\dev-tokens.RData")
+save(dev2.tokens, dev2.word.count, file = "data\\dev2-tokens.RData")
+save(dev3.tokens, dev3.word.count, file = "data\\dev3-tokens.RData")
+save(training.tokens, training.word.count, 
+     file = "data\\training-tokens.RData")
+# save(test.tokens, test.word.count, file = "data\\test-tokens.RData")
+# save(validation.tokens, validation.word.count, 
+#      file = "data\\validation-tokens.RData")

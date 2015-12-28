@@ -80,9 +80,9 @@ CreateTrigrams <- function(tokens) {
   
   #tokens <- dev.tokens[[1]]
   
-  word1 <- vector(mode = "integer")
-  word2 <- vector(mode = "integer")
-  word3 <- vector(mode = "integer")
+  word1 <- vector(mode = "character")
+  word2 <- vector(mode = "character")
+  word3 <- vector(mode = "character")
     
   if(length(tokens) > 2) {
     for(i in 1:(length(tokens) - 2)) {
@@ -91,7 +91,6 @@ CreateTrigrams <- function(tokens) {
       word3 <- append(word3, tokens[i+2])
     }
   }
-  #data.frame(bigram, next.word, stringsAsFactors = FALSE)
   matrix(c(word1, word2, word3), ncol = 3)
 }
 

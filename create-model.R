@@ -5,10 +5,10 @@ source("next-word-functions.R")
 
 # Load data
 # load("data\\dev-corpora.RData")
-load("data\\dev-tokens.RData")
-load("data\\dev2-tokens.RData")
-load("data\\dev3-tokens.RData")
-# load("data\\training-tokens.RData")
+# load("data\\dev-tokens.RData")
+# load("data\\dev2-tokens.RData")
+# load("data\\dev3-tokens.RData")
+load("data\\training-tokens.RData")
 # load("data\\test-tokens.RData")
 
 
@@ -18,20 +18,20 @@ mem.before <- mem_used()
 
 
 # Create model
-dev.trigram.model <- CountTrigrams(dev3.tokens)
+training.trigram.model <- CountTrigrams(training.tokens)
 
 
 # Add metrics
 runtime <- format(Sys.time() - start.time, digits = 3)
 mem.after <- format(capture.output(mem_used()))
-mem.model <- format(capture.output(object_size(dev.trigram.model)))
+mem.model <- format(capture.output(object_size(training.trigram.model)))
 this.metric <- cbind(start.time = format(start.time),
-                     records = length(dev3.tokens),
+                     records = length(training.tokens),
                      runtime,
                      mem.before = format(capture.output(mem.before)),
                      mem.after,
                      mem.model,
-                     comment = "Remove words occuring <6 from index")
+                     comment = "Using StringsAsFactors, but no index")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)
@@ -40,6 +40,7 @@ if(file.exists("data\\metrics.RData")) {
   }
 save(metrics, file = "data\\metrics.RData")
 
+save(training.trigram.model, file = "data\\training-model.RData")
 
 
 
