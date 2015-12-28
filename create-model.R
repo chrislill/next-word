@@ -40,7 +40,11 @@ if(file.exists("data\\metrics.RData")) {
   }
 save(metrics, file = "data\\metrics.RData")
 
-save(training.trigram.model, file = "data\\training-model.RData")
+# Save model
+if (!file.exists("models")) {
+  dir.create("models")
+}
+save(training.trigram.model, file = "models\\training-model.RData")
 
 
 
