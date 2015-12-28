@@ -119,11 +119,50 @@ CountTrigrams <- function(token.list) {
     group_by(word1, word2, word3) %>%
     summarise(count = length(word1)) %>%
     filter(count > 1) %>%
-    arrange(word1, word2, count)
+    arrange(word1, word2, desc(count))
 
   trigram.count
 }
 
 
+QuizProbabilities <- function (quiz, bigrams) {
+  # Calculates the top 5 probabilities for the next word
+  # Assumes that trigram.model is loaded in memory
+  #
+  # Args:
+  #   bigrams: A tokenised list, containing vectors of words
+  #
+  # Returns:
+  #   A dataframe of words and their probability
+  
+  # bigram <- bigrams[1,]
+  
+  for(i in 1:nrow(quiz)) {
+    suggestions <- trigram.model[trigram.model$word1 == bigrams[i, 1] & 
+                                   trigram.model$word2 == bigrams[i, 2], ]
+    
+    # Remove this when we fix the model to return desc(count)
+    suggestions <- arrange(suggestions, desc(count))
+    
+    total.records <- sum(suggestions$count)
+    
+    if (nrow(suggestions) > 5) {
+      suggestions <- rbind(suggestions[1:5,],
+                           suggestions[suggestions$word3 %in% quiz[i, 2:5],])
+    }
+    
+    suggestions$question <- quiz[i, 1]
+    suggestions$answer <- as.character(suggestions$word3)
+    suggestions$pr <- signif(suggestions$count / total.records, 2)
 
+    if(exists("answers")) {
+      answers <- rbind(answers, suggestions[,5:7])
+    } else {
+      answers <- suggestions[,5:7]
+    }
+    
+  }
+  
+  answers
+}
 

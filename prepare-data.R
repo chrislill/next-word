@@ -1,4 +1,3 @@
-# Load myTokenise function
 source("next-word-functions.R")
 
 # Download file and unzip

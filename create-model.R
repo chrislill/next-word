@@ -1,6 +1,5 @@
 library(pryr)
 
-# Load myUnigramCount and myTrigramCount functions
 source("next-word-functions.R")
 
 # Load data
