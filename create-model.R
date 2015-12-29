@@ -8,7 +8,7 @@ source("next-word-functions.R")
 # load("data\\dev2-tokens.RData")
 # load("data\\dev3-tokens.RData")
 load("data\\training-tokens.RData")
-# load("data\\test-tokens.RData")
+# load("data\\validation-tokens.RData")
 
 
 # Initialise metrics
@@ -43,7 +43,7 @@ save(metrics, file = "data\\metrics.RData")
 if (!file.exists("models")) {
   dir.create("models")
 }
-save(training.trigram.model, file = "models\\training-model.RData")
+save(training.trigram.model, start.time, file = "models\\training-model.RData")
 
 
 
