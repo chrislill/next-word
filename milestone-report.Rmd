@@ -5,11 +5,13 @@ date: "28 December 2015"
 output: html_document
 ---
 
-This report part of a project to predict the next word in a sequence, and is published at the half way point. It contains a summary of the distribution of words and sequences of words in a sample of English text from the internet. This text is curated and known as the [HC Corpora](http://www.corpora.heliohost.org/). The report summarises my findings so far and will outline a plan to complete the prediction algorithm and application.
+This report is published at the halfway point of a project to predict the next word in a sentence. It contains a summary of the distribution of words and sequences of words in a sample of English text from the internet. The report summarises my findings so far and will outline a plan to complete the project.
 
-# Word frequency
+# Basic analysis
 
-First, load the dataset. It contains data from twitter, blogs and news articles.
+## Data load and preparation
+
+The dataset is curated and known as the [HC Corpora](http://www.corpora.heliohost.org/). It contains data from twitter, blogs and news articles.
 
 ```{r download, cache = TRUE}
 if(!file.exists("Coursera-SwiftKey.zip")) {
@@ -26,23 +28,22 @@ news <- readLines(con.news, encoding = "UTF-8", skipNul = TRUE)
 close(con.twitter)
 close(con.news)
 close(con.blogs)
-
-corpora <- append(twitter, append(blogs, news))  
 ```
 
-The TokeniseText function simplifies the text into tokens that are easier to model. This creates a list (actually a vector) of words (tokens) for each piece of text. These words are lower case and contain no numbers or whitespace; punctuation is limited to hyphens and apostrophes within words. 
+A new TokeniseText function simplifies the text into tokens that are easier to model. This separates the words (tokens) for each piece of text. These words are lower case and contain no numbers or whitespace; punctuation is limited to hyphens and apostrophes within words. 
 
 ```{r tokenise, cache = TRUE}
-suppressMessages(source("next-word-functions.R"))
+source("next-word-functions.R")
 twitter.tokens <- sapply(twitter, TokeniseText)
 blogs.tokens <- sapply(blogs, TokeniseText)
 news.tokens <- sapply(news, TokeniseText)
-total.tokens <- append(twitter.tokens, append(blogs.tokens, news.tokens)) 
 ```
 
-The CountWords function produces a summary table with the count of each unique word. This information can be used to produce the word frequency table.
+## Word frequency
 
-```{r word.frequency, cache = TRUE}
+A new CountWords function produces a summary table with the count of each unique word. This information can be used to produce the word frequency table. The code to produce this table is omitted for brevity.
+
+```{r word.frequency, echo = FALSE, cache = TRUE}
 twitter.words <- CountWords(twitter.tokens)
 blogs.words <- CountWords(blogs.tokens)
 news.words <- CountWords(news.tokens)
@@ -61,20 +62,108 @@ unique.words <- c(length(twitter.words$count), length(blogs.words$count),
                   length(news.words$count), length(total.words$count))
 words.per.line <- word.count / line.count
 average.frequency <- word.count / unique.words
-word.frequency <- data.frame(name, line.count, word.count, unique.words, 
-                             words.per.line, average.frequency)
 
 library(knitr)
-kable(word.frequency, digits = 0, caption = "Word frequency table",
-      format.args = list(big.mark   = ","))
+word.frequency <- data.frame(name, line.count, word.count, unique.words, 
+                             words.per.line, average.frequency)
+kable(word.frequency, digits = 0, format.args = list(big.mark   = ","))
 ```
 
-# Word distribution
+## Frequent words
+
+The word cloud below shows the 100 most frequent words. These account for `r round((sum(total.words$count[1:100]) / word.count[4]) * 100)`% of word instances. The most frequent word is "`r total.words$word[1]`", which occurs `r total.words$count[1]` times and accounts for `r round((total.words$count[1] / word.count[4]) * 100)`% of word instances.
+
+```{r frequent.words, cache = TRUE, fig.height = 4}
+set.seed(1234)
+library(wordcloud, quietly = TRUE)
+pal <- brewer.pal(8, "Dark2")
+wordcloud(total.words$word, total.words$count, max.words = 100, 
+          scale = c(4, 1), colors = pal, random.color = TRUE)
+```
+
+## Dictionary size and coverage
+
+A large number of words only occur a couple of times, and are unlikely to be predicted. Using a fixed dictionary size that includes only frequent words would improve algorithm performance. Marking the missing words as unknown (`<UNK>`) would provide a way for the algorithm to predict words that are not in the original dataset.
+
+```{r word.coverage, cache = TRUE}
+min.instances <- c(1, 2, 3, 5, 10, 20, 50, 80, 100)
+dictionary.size <- sapply(min.instances, 
+                          function(x) sum(total.words$count >= x))
+words.covered <- sapply(min.instances, 
+                        function(x) sum(total.words$count[total.words$count >= x]))
+coverage <- paste0(round((words.covered / words.covered[1]) * 100, 2), "%")
+word.coverage <- data.frame(min.instances, dictionary.size, coverage)
+kable(word.coverage, align = 'l', format.args = list(big.mark   = ","))
+```
+
+## Omitted words
+
+Based on the data above, lets start with a minimum dictionary size of 30,000 words. This can be tuned at a later date. This corresponds to a min.instance of `r max(min.instances[dictionary.size >= 30000])`. The word cloud below shows a random sample of 50 words that would be omitted from the dictionary and treated as unknown.
+
+```{r omitted.words, cache = TRUE, fig.height = 3}
+min.instance.selected <- max(min.instances[dictionary.size >= 30000])
+words.omitted <- total.words$word[total.words$count > min.instance.selected - 1]
+set.seed(1234)
+subset.omitted <- as.character(words.omitted[sample(length(words.omitted), 50)])
+
+wordcloud(subset.omitted, rep(1, 50), scale = c(1.2, 1.2), rot.per = 0,
+          fixed.asp = FALSE, colors = pal, random.color = TRUE)
+```               
+
+## Word distribution
+
+This histogram shows the distribution of word instances. It uses a square root scale on the Y axis because of the large number of low frequency words. The X axis is truncated because the tail of the distribution is so long. This shows that omitting low frequency words should have minimal impact on accuracy.
+
+```{r word.histogram, cache = TRUE, warning = FALSE, fig.width = 10}
+library(ggplot2)
+ggplot(total.words, aes(x = count)) + 
+   geom_histogram(binwidth = 2, fill = "saddlebrown") + 
+   xlim(0, 1000) + 
+   scale_y_sqrt() +
+   labs(x = "Word instances", y = "Unique words")
+```
+
+# Initial findings
+
+## Accuracy
+I have created a simple 3 word (trigram) model using 60% of the data. This was quite inaccurate. For quiz 2 the model predicted the answers without using the shortlist of answers as context, and only 3 out of 10 answers were correct. 6 of the questions did not have any of the shortlist answers in the top 5 predictions. The algorithm will need to use additional context from the text. Repeatable measurement of accuracy and perplexity for each model is also important.
+
+## Memory
+Using 60% of the training data exceeded the 8GB memory limit on my PC. The table below shows durations and memory usage for a selection of models. The memory would peak during the grouping and summarizing of the trigrams.
+
+The model was run on a virtual machine (VM) in Microsoft Azure. This was slower than my laptop, but has 56GB Ram available. It should be possible to use Revolution R to take advantage of the 8 core processor on the Azure VM and significantly reduce processing time.
+
+Once the measurement of accuracy and perplexity is implemented, reductions in memory usage should be a priority. The models should be initially tuned on a subset of the data.
+
+```{r memory.usage, cache = TRUE}
+load("data\\metrics.RData")
+kable(metrics[c(1, 3:6, 11, 17:19), ], align = 'l')
+```
+
+# Plan
+
+Here is a high level plan to complete the project.
+
+1. Model evaluation
+    + Measure accuracy
+    + Measure perplexity
+    + Log results for each model
+    + Optimize evaluation (reduce validation set?)
+2. Optimize memory usage
+    + Use a data.table to improve performance
+    + Prune less frequent trigrams
+    + Remove less frequent words and replace with `<UNK>`
+    + Try implementing a word index?
+3. Improve model
+    + Interpolation of unigrams, bigrams and trigrams
+    + Sentence segmentation with `<S>`
+    + Fix incorrectly encoded apostrophes
+    + Try quadgrams   
+    + Try Part of speech tagging using tagPOS()
+4. Shiny app
+    + Start this early
+    + Include probabilities for each prediction
+5. Presentation
+    
 
 
-
-
-
-# Trigram frequency
-
-Load the model and summarise
