@@ -7,7 +7,7 @@ output: html_document
 
 This report part of a project to predict the next word in a sequence, and is published at the half way point. It contains a summary of the distribution of words and sequences of words in a sample of English text from the internet. This text is curated and known as the [HC Corpora](http://www.corpora.heliohost.org/). The report summarises my findings so far and will outline a plan to complete the prediction algorithm and application.
 
-# Word distribution
+# Word frequency
 
 First, load the dataset. It contains data from twitter, blogs and news articles.
 
@@ -40,7 +40,7 @@ news.tokens <- sapply(news, TokeniseText)
 total.tokens <- append(twitter.tokens, append(blogs.tokens, news.tokens)) 
 ```
 
-The CountWords function produces a summary table with the count of each unique word. This information can be used to produce the word frequency table below.
+The CountWords function produces a summary table with the count of each unique word. This information can be used to produce the word frequency table.
 
 ```{r word.frequency, cache = TRUE}
 twitter.words <- CountWords(twitter.tokens)
@@ -65,9 +65,16 @@ word.frequency <- data.frame(name, line.count, word.count, unique.words,
                              words.per.line, average.frequency)
 
 library(knitr)
-kable(wordfrequency, 
-      digits = 0,
-      caption = "Word frequency table")
+kable(word.frequency, digits = 0, caption = "Word frequency table",
+      format.args = list(big.mark   = ","))
 ```
 
+# Word distribution
 
+
+
+
+
+# Trigram frequency
+
+Load the model and summarise
