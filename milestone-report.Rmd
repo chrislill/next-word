@@ -1,0 +1,73 @@
+---
+title: "Next word milestone report"
+author: "Chris Lill"
+date: "28 December 2015"
+output: html_document
+---
+
+This report part of a project to predict the next word in a sequence, and is published at the half way point. It contains a summary of the distribution of words and sequences of words in a sample of English text from the internet. This text is curated and known as the [HC Corpora](http://www.corpora.heliohost.org/). The report summarises my findings so far and will outline a plan to complete the prediction algorithm and application.
+
+# Word distribution
+
+First, load the dataset. It contains data from twitter, blogs and news articles.
+
+```{r download, cache = TRUE}
+if(!file.exists("Coursera-SwiftKey.zip")) {
+  training.url <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
+  download.file(training.url, "Coursera-SwiftKey.zip")
+  unzip("Coursera-SwiftKey.zip")
+}
+con.twitter <- file("final\\en_US\\en_US.twitter.txt", open="rb")
+con.blogs <- file("final\\en_US\\en_US.blogs.txt", open="rb")
+con.news <- file("final\\en_US\\en_US.news.txt", open="rb")
+twitter <- readLines(con.twitter, encoding = "UTF-8", skipNul = TRUE)
+blogs <- readLines(con.blogs, encoding = "UTF-8", skipNul = TRUE)
+news <- readLines(con.news, encoding = "UTF-8", skipNul = TRUE)
+close(con.twitter)
+close(con.news)
+close(con.blogs)
+
+corpora <- append(twitter, append(blogs, news))  
+```
+
+The TokeniseText function simplifies the text into tokens that are easier to model. This creates a list (actually a vector) of words (tokens) for each piece of text. These words are lower case and contain no numbers or whitespace; punctuation is limited to hyphens and apostrophes within words. 
+
+```{r tokenise, cache = TRUE}
+suppressMessages(source("next-word-functions.R"))
+twitter.tokens <- sapply(twitter, TokeniseText)
+blogs.tokens <- sapply(blogs, TokeniseText)
+news.tokens <- sapply(news, TokeniseText)
+total.tokens <- append(twitter.tokens, append(blogs.tokens, news.tokens)) 
+```
+
+The CountWords function produces a summary table with the count of each unique word. This information can be used to produce the word frequency table below.
+
+```{r word.frequency, cache = TRUE}
+twitter.words <- CountWords(twitter.tokens)
+blogs.words <- CountWords(blogs.tokens)
+news.words <- CountWords(news.tokens)
+total.words <- rbind(twitter.words, blogs.words, news.words) %>%
+  group_by(word) %>%
+  summarise(count = sum(count)) %>%
+  arrange(desc(count))
+
+name <- c("Twitter", "Blogs", "News", "Total")
+line.count <- c(length(twitter.tokens), length(blogs.tokens),
+                length(news.tokens), 0)
+line.count[4] <- sum(line.count)
+word.count <- c(sum(twitter.words$count), sum(blogs.words$count),
+                sum(news.words$count), sum(total.words$count))
+unique.words <- c(length(twitter.words$count), length(blogs.words$count),
+                  length(news.words$count), length(total.words$count))
+words.per.line <- word.count / line.count
+average.frequency <- word.count / unique.words
+word.frequency <- data.frame(name, line.count, word.count, unique.words, 
+                             words.per.line, average.frequency)
+
+library(knitr)
+kable(wordfrequency, 
+      digits = 0,
+      caption = "Word frequency table")
+```
+
+
