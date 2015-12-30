@@ -3,7 +3,6 @@ require(dplyr, warn.conflicts = FALSE)
 
 # TODO: Sentence segmentation <S>
 # TODO: <UNK> to handle missing words
-# TODO: Modify regex to correct the wrong apostrophe ' > '
 TokeniseText <- function(documents) {
   # Tokenises each word in a collection of documents, removing numbers, 
   # most punctuation, excess whitespace and changing to lowercase.
@@ -14,7 +13,8 @@ TokeniseText <- function(documents) {
   # Returns:
   #   List containing vectors of words (token.list)
   
-  x <- gsub("[^a-zA-Z '-]", " ", documents)
+  x <- gsub("[\u2018\u2019\u201A\u201B\u2032\u2035]", "'", documents)
+  x <- gsub("[^a-zA-Z '-]", " ", x)
   x <- gsub("^[-']+|[-']+$| [-']+|[-']+ [-']*", " ", x)
   x <- tolower(x)
   x <- trimws(stripWhitespace(x))
