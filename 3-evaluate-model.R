@@ -1,5 +1,14 @@
+library(dplyr)
+
 source("next-word-functions.R")
 
+# Load model
+if(!exists("trigram.model")) {
+  load(file = "models\\training-model.RData")
+  trigram.model <- training.trigram.model
+}
+
+# Validation data
 if(!exists("validation.trigrams")) {
   load("data\\validation-tokens.RData")
   validation.trigrams <- CountTrigrams(validation.tokens)
@@ -7,15 +16,12 @@ if(!exists("validation.trigrams")) {
   } else {
   load("data\\validation-trigrams.RData")
   }
-
-if(!exists("trigram.model")) {
-  load(file = "models\\training-model.RData")
-  trigram.model <- training.trigram.model
-}
-
-v2.trigrams <- validation.trigrams[101:200, ]
-v2.trigram.char <- sapply(v2.trigrams[, 1:2], as.character)
+v2.trigrams <- validation.trigrams[101:200, ] %>%
+  group_by() %>%
+  mutate(word1 = as.character(word1)) %>%
+  mutate(word2 = as.character(word2)) %>%
+  mutate(prediction = PredictWord(word1, word2))
 
 
-v2.trigrams$prediction <- sapply(v2.trigram.char, PredictWord)
+
     

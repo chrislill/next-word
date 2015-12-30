@@ -124,31 +124,30 @@ CountTrigrams <- function(token.list) {
   trigram.count
 }
 
+PredictWord <- function(word1, word2) { 
+  # Calculates the most likely next word 
+  # Assumes that trigram.model is loaded in memory 
+  # 
+  # Args: 
+  #   word1: First word in the trigram 
+  #   word2: Second word in the trigram 
+  # 
+  # Returns: 
+  #   The most likely third word in the trigram 
 
-PredictWord <- function(word1, word2) {
-  # Calculates the most likely next word
-  # Assumes that trigram.model is loaded in memory
-  #
-  # Args:
-  #   word1: First word in the trigram
-  #   word2: Second word in the trigram
-  #
-  # Returns:
-  #   The most likely third word in the trigram
+  # Test Function:
+#   word1 <- as.character(validation.trigrams[[101, "word1"]]) 
+#   word2 <- as.character(validation.trigrams[[101, "word2"]]) 
 
-   word1 <- as.character(validation.trigrams[[101, "word1"]])
-   word2 <- as.character(validation.trigrams[[101, "word2"]])
+  # Function cannot be called by dplyr - change the structure of the model.
+  prediction <- which(trigram.model$word1 == word1 & 
+                             trigram.model$word2 == word2)[1]
   
-  word1 <- as.character(word1)
-  word2 <- as.character(word2)
-  
-  predictions <- which(trigram.model$word1 == word1 & trigram.model$word2 == word2)
-  prediction <- as.character(trigram.model$word3[predictions[length(predictions)]])
-  
+  # TODO: Handle the case where the first match is actually 1
   if (is.na(prediction)) {
     "<UNK>"
   } else {
-    prediction
+    as.character(trigram.model$word3[prediction])
   }
 }
   
