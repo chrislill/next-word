@@ -20,8 +20,8 @@ close(con.blogs)
 
 # Partition the data as follows:
 # 60% training set
-# 30% test set
-# 10% validation set
+# 30% validation set
+# 10% test set
 # 1000 record dev set (from training)
 corpora <- append(twitter, append(blogs, news))
 boundary <- c(floor(0.6 * length(corpora)),
@@ -29,7 +29,7 @@ boundary <- c(floor(0.6 * length(corpora)),
               length(corpora))
 set.seed(1234)
 corpora.index <- sample(length(corpora), length(corpora))
-training.corpora <- corpora[corpora.index[1:boundary[1]]]
+# training.corpora <- corpora[corpora.index[1:boundary[1]]]
 # validation.corpora <- corpora[corpora.index[(boundary[1] + 1):boundary[2]]]                          
 # test.corpora <- corpora[corpora.index[(boundary[2] + 1):boundary[3]]]  
 dev.corpora <- training.corpora[1:1000]

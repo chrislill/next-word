@@ -1,5 +1,5 @@
-library(tm)
-library(dplyr)
+require(tm)
+require(dplyr, warn.conflicts = FALSE)
 
 # TODO: Sentence segmentation <S>
 # TODO: <UNK> to handle missing words
@@ -124,6 +124,34 @@ CountTrigrams <- function(token.list) {
   trigram.count
 }
 
+
+PredictWord <- function(word1, word2) {
+  # Calculates the most likely next word
+  # Assumes that trigram.model is loaded in memory
+  #
+  # Args:
+  #   word1: First word in the trigram
+  #   word2: Second word in the trigram
+  #
+  # Returns:
+  #   The most likely third word in the trigram
+
+   word1 <- as.character(validation.trigrams[[101, "word1"]])
+   word2 <- as.character(validation.trigrams[[101, "word2"]])
+  
+  word1 <- as.character(word1)
+  word2 <- as.character(word2)
+  
+  predictions <- which(trigram.model$word1 == word1 & trigram.model$word2 == word2)
+  prediction <- as.character(trigram.model$word3[predictions[length(predictions)]])
+  
+  if (is.na(prediction)) {
+    "<UNK>"
+  } else {
+    prediction
+  }
+}
+  
 
 QuizProbabilities <- function (quiz, bigrams) {
   # Calculates the top 5 probabilities for the next word
