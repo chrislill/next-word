@@ -1,5 +1,6 @@
 require(tm)
 require(dplyr, warn.conflicts = FALSE)
+require(data.table, warn.conflicts = FALSE)
 
 # TODO: Sentence segmentation <S>
 # TODO: <UNK> to handle missing words
@@ -103,24 +104,24 @@ CountTrigrams <- function(token.list) {
   #   tokens: A tokenised list, containing vectors of words
   #
   # Returns:
-  #   A trigram frequency dataframe
+  #   A trigram frequency data table
   
-  #token.list <- dev2.tokens
+  # Test data:
+  # token.list <- dev.tokens
   
   trigram.list <- sapply(token.list, 
                          CreateTrigrams, 
                          simplify = "array", 
                          USE.NAMES = FALSE)
   
-  trigram.df <- data.frame(do.call(rbind, trigram.list))
-  names(trigram.df) <- c("word1", "word2", "word3")
-  
-  trigram.count <- trigram.df %>%
-    group_by(word1, word2, word3) %>%
-    summarise(count = length(word1)) %>%
-    filter(count > 1) %>%
-    arrange(word1, word2, desc(count))
+  trigram.dt <- data.table(do.call(rbind, trigram.list))
+  names(trigram.dt) <- c("word1", "word2", "word3")
 
+  trigram.count <- trigram.dt[, count:=.N, by = .(word1, word2, word3)]
+  trigram.count <- unique(trigram.count[count > 1])
+  setkey(trigram.count, word1, word2)
+  setorder(trigram.count, word1, word2, -count)
+  
   trigram.count
 }
 

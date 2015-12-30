@@ -6,8 +6,8 @@ source("next-word-functions.R")
 # load("data\\dev-corpora.RData")
 # load("data\\dev-tokens.RData")
 # load("data\\dev2-tokens.RData")
-# load("data\\dev3-tokens.RData")
-load("data\\training-tokens.RData")
+load("data\\dev3-tokens.RData")
+# load("data\\training-tokens.RData")
 # load("data\\validation-tokens.RData")
 
 
@@ -17,33 +17,34 @@ mem.before <- mem_used()
 
 
 # Create model
-training.trigram.model <- CountTrigrams(training.tokens)
+dev.trigram <- CountTrigrams(dev3.tokens)
+# training.trigram.model <- CountTrigrams(training.tokens)
 
 
 # Add metrics
 runtime <- format(Sys.time() - start.time, digits = 3)
 mem.after <- format(capture.output(mem_used()))
-mem.model <- format(capture.output(object_size(training.trigram.model)))
+mem.model <- format(capture.output(object_size(dev.trigram)))
 this.metric <- cbind(start.time = format(start.time),
-                     records = length(training.tokens),
+                     records = length(dev3.tokens),
                      runtime,
                      mem.before = format(capture.output(mem.before)),
                      mem.after,
                      mem.model,
-                     comment = "Using StringsAsFactors, but no index")
+                     comment = "Use data table for CountTrigrams")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)
 } else {
-  metrics <- data.frame(this.metric)
+  metrics <- data.frame(this.metric, stringsAsFactors = FALSE)
   }
 save(metrics, file = "data\\metrics.RData")
 
 # Save model
-if (!file.exists("models")) {
-  dir.create("models")
-}
-save(training.trigram.model, start.time, file = "models\\training-model.RData")
+# if (!file.exists("models")) {
+#   dir.create("models")
+# }
+# save(training.trigram.model, start.time, file = "models\\training-model.RData")
 
 
 

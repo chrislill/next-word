@@ -18,12 +18,12 @@ close(con.twitter)
 close(con.news)
 close(con.blogs)
 
+# TODO: Increase the validation set from 10 - 30% once the algorithms are more performant
 # Partition the data as follows:
 # 60% training set
 # 30% validation set (Currently set to 10%)
 # 10% test set
 # 1000 record dev set (from training)
-# TODO: Increase the validation set from 10 - 30% once the algorithms are more performant
 corpora <- append(twitter, append(blogs, news))
 boundary <- c(floor(0.6 * length(corpora)),
               floor(0.8 * length(corpora)),
@@ -62,7 +62,6 @@ save(dev2.tokens, dev2.word.count, file = "data\\dev2-tokens.RData")
 save(dev3.tokens, dev3.word.count, file = "data\\dev3-tokens.RData")
 save(training.tokens, training.word.count, 
      file = "data\\training-tokens.RData")
-save(validation.tokens, validation.word.count, 
-     file = "data\\validation-tokens.RData")
-save(test.tokens, test.word.count, file = "data\\test-tokens.RData")
+save(validation.tokens, file = "data\\validation-tokens.RData")
+save(test.tokens, file = "data\\test-tokens.RData")
 
