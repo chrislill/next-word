@@ -66,50 +66,6 @@ ReplaceUnknownWords <- function(word.vector, dictionary) {
 }
 
 
-CreateIndex <- function(word.token.list) {
-  # Creates a vector of words, omitting words that only occur once 
-  # and sorted alphabetically
-  #
-  # Args:
-  #   word.token.list: A tokenised list, containing vectors of words
-  #
-  # Returns:
-  #   A word vector, to be used as an index
-  
-  word <- unlist(word.token.list, use.names = FALSE)
-  
-  word.count <- data.frame(word, stringsAsFactors = FALSE) %>%
-    group_by(word) %>%
-    summarise(count = length(word)) %>%
-    filter(count > 5) %>%
-#    arrange(word)
-  arrange(count)
-    
-  word.count$word
-  
-}
-
-
-CountWords <- function(token.list) {
-  # Creates a word frequency table, sorted by frequency
-  #
-  # Args:
-  #   tokenlist: A tokenised list, containing vectors of words
-  #
-  # Returns:
-  #   A word frequency dataframe
-  
-  word <- unlist(token.list, use.names = FALSE)
-  
-  word.count <- data.frame(word) %>%
-    group_by(word) %>%
-    summarise(count = length(word)) %>%
-    arrange(desc(count))
-  
-  word.count
-}
-
-
 # TODO: Only keep top 5 next words
 CreateTrigrams <- function(tokens) {
   # Creates a simple matrix with a row for each trigram and a column 
@@ -196,8 +152,6 @@ BuildTrigramModel <- function(trigram.count) {
            pr_4 = signif(count_4 / V1, 2),
            pr_5 = signif(count_5 / V1, 2)) %>%
     select(starts_with("word"), starts_with("pr"))
-  
-  
 }  
   
 
