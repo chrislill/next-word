@@ -17,21 +17,22 @@ mem.before <- mem_used()
 
 
 # Create model
-dev.trigram <- CountTrigrams(dev3.tokens)
+trigram.count <- CountTrigrams(training.tokens)
+trigram.model <- BuildTrigramModel(trigram.count)
 # training.trigram.model <- CountTrigrams(training.tokens)
 
 
 # Add metrics
 runtime <- format(Sys.time() - start.time, digits = 3)
 mem.after <- format(capture.output(mem_used()))
-mem.model <- format(capture.output(object_size(dev.trigram)))
+mem.model <- format(capture.output(object_size(trigram.model)))
 this.metric <- cbind(start.time = format(start.time),
-                     records = length(dev3.tokens),
+                     records = length(training.tokens),
                      runtime,
                      mem.before = format(capture.output(mem.before)),
                      mem.after,
                      mem.model,
-                     comment = "Remove trigrams with word3 = <UNK>")
+                     comment = "Restructured model with one row per bigram")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)
@@ -44,7 +45,7 @@ save(metrics, file = "data\\metrics.RData")
 if (!file.exists("models")) {
   dir.create("models")
 }
-save(dev.trigram, start.time, file = "models\\dev-model.RData")
+save(trigram.model, start.time, file = "models\\training-model.RData")
 
 
 

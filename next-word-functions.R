@@ -110,7 +110,6 @@ CountWords <- function(token.list) {
 }
 
 
-# TODO: Remove single trigrams
 # TODO: Only keep top 5 next words
 CreateTrigrams <- function(tokens) {
   # Creates a simple matrix with a row for each trigram and a column 
@@ -142,14 +141,13 @@ CreateTrigrams <- function(tokens) {
 
 
 CountTrigrams <- function(token.list) {
-  # Creates a data-frame for predicting trigrams using the bigram,  
-  # associated next word, and frequency
+  # Creates a data.table of unique trigrams and a count of occurances
   #
   # Args:
   #   tokens: A tokenised list, containing vectors of words
   #
   # Returns:
-  #   A trigram frequency data table
+  #   A trigram frequency data.table
   
   # Test data:
   # token.list <- dev.tokens
@@ -166,11 +164,42 @@ CountTrigrams <- function(token.list) {
   
   # TODO: Filter out more low frequency trigrams
   trigram.count <- unique(trigram.count[count > 1])
-  setkey(trigram.count, word1, word2)
   setorder(trigram.count, word1, word2, -count)
+  setkey(trigram.count, word1, word2)
   
   trigram.count
 }
+
+
+BuildTrigramModel <- function(trigram.count) {
+  # Creates a model for use in the application. For each bigram it suggests the
+  # top five answers and gives the percentage probabilities.
+  #
+  # Args:
+  #   trigram.count: A trigram frequency data.table
+  #
+  # Returns:
+  #   A data.table with a row for each bigram
+  
+  # Return the top 5 rows for each bigram - Data tables are awesome! 
+  trigram.top5 <- trigram.count[, .SD[1:min(5, .N)], by=.(word1, word2)]
+  trigram.top5[, answer:=(1:.N), by=.(word1, word2)]
+  
+  # Cast the data.table, so there is a single row for each bigram
+  trigram.wide <- dcast(trigram.top5, word1 + word2 ~ answer, 
+                         value.var = c("word3", "count"))
+  trigram.totals <- trigram.count[, sum(count),by=.(word1, word2)]
+  trigram.model <- trigram.wide[trigram.totals] %>%
+    mutate(pr_1 = signif(count_1 / V1, 2),
+           pr_2 = signif(count_2 / V1, 2),
+           pr_3 = signif(count_3 / V1, 2),
+           pr_4 = signif(count_4 / V1, 2),
+           pr_5 = signif(count_5 / V1, 2)) %>%
+    select(starts_with("word"), starts_with("pr"))
+  
+  
+}  
+  
 
 PredictWord <- function(word1, word2) { 
   # Calculates the most likely next word 
