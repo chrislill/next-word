@@ -18,7 +18,9 @@ if(!exists("validation.trigrams")) {
 } 
 
 # Evaluate --------------------------------------------------------------------
-val.results <- trigram.model[validation.trigrams[101:200, ]]
+# TODO: Load the 30% dataset and compare accuracy
+eval.start <- Sys.time()
+val.results <- trigram.model[validation.trigrams[600000:700000, ]]
 val.results[, accuracy:=(word3 == word3_1)]
 
 # TODO: There is definitely a more elegant way to do this...
@@ -36,9 +38,25 @@ val.results[, perplexity:=(sum((word3 == word3_1) / pr_1,
 val.eval <- val.results[, list(sum(count),
                                sum(accuracy * count, na.rm = TRUE),
                                sum(first.5.accuracy * count, na.rm = TRUE),
-                               sum(probability * count))]
+                               sum(perplexity * count))]
 accuracy <- round(val.eval[[1, 2]] / val.eval[[1, 1]], 3)
 first.5.accuracy <- round(val.eval[[1, 3]] / val.eval[[1, 1]], 3)
 perplexity <- round(val.eval[[1, 4]] ^ (1 / val.eval[[1, 1]]), 3)
 
-    
+# Metrics for evaluation accuracy ---------------------------------------------
+runtime <- format(Sys.time() - eval.start, digits = 3)
+this.eval <- cbind(start.time = format(start.time),
+                   records = nrow(val.results),
+                   accuracy,
+                   first.5.accuracy,
+                   perplexity,
+                   runtime,
+                   comment = "Compare variation across 7 folds")
+if(file.exists("data\\eval-accuracy.RData")) {
+  load("data\\eval-accuracy.RData")
+  eval.accuracy <- rbind(eval.accuracy, this.eval)
+} else {
+  eval.accuracy <- data.frame(this.eval, stringsAsFactors = FALSE)
+}
+save(eval.accuracy, file = "data\\eval-accuracy.RData")
+
