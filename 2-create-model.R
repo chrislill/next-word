@@ -6,8 +6,8 @@ source("next-word-functions.R")
 # load("data\\dev-corpora.RData")
 # load("data\\dev-tokens.RData")
 # load("data\\dev2-tokens.RData")
-load("data\\dev3-tokens.RData")
-# load("data\\training-tokens.RData")
+# load("data\\dev3-tokens.RData")
+load("data\\training-tokens.RData")
 # load("data\\validation-tokens.RData")
 
 
@@ -31,7 +31,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.before = format(capture.output(mem.before)),
                      mem.after,
                      mem.model,
-                     comment = "Use data table for CountTrigrams")
+                     comment = "Remove trigrams with word3 = <UNK>")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)
@@ -41,10 +41,10 @@ if(file.exists("data\\metrics.RData")) {
 save(metrics, file = "data\\metrics.RData")
 
 # Save model
-# if (!file.exists("models")) {
-#   dir.create("models")
-# }
-# save(training.trigram.model, start.time, file = "models\\training-model.RData")
+if (!file.exists("models")) {
+  dir.create("models")
+}
+save(dev.trigram, start.time, file = "models\\dev-model.RData")
 
 
 

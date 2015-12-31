@@ -46,11 +46,22 @@ training.tokens <- sapply(training.corpora, TokeniseText, USE.NAMES = FALSE)
 validation.tokens <- sapply(validation.corpora, TokeniseText, USE.NAMES = FALSE)
 test.tokens <- sapply(test.corpora, TokeniseText, USE.NAMES = FALSE)
 
-# Word Counts
-dev.word.count <- CountWords(dev.tokens)
-dev2.word.count <- CountWords(dev2.tokens)
-dev3.word.count <- CountWords(dev3.tokens)
-training.word.count <- CountWords(training.tokens)
+# Create dictionary with frequent words
+dev.dictionary <- CreateDictionary(dev.tokens)
+dev2.dictionary <- CreateDictionary(dev2.tokens)
+dev3.dictionary <- CreateDictionary(dev3.tokens)
+training.dictionary <- CreateDictionary(training.tokens)
+
+# Replace tokens that aren't in the dictionary with <UNK>
+dev.tokens <- lapply(dev.tokens, ReplaceUnknownWords, 
+                       dictionary = dev.dictionary)
+dev2.tokens <- lapply(dev2.tokens, ReplaceUnknownWords, 
+                      dictionary = dev2.dictionary)
+dev3.tokens <- lapply(dev3.tokens, ReplaceUnknownWords, 
+                      dictionary = dev3.dictionary)
+training.tokens <- lapply(training.tokens, ReplaceUnknownWords,
+                          dictionary = training.dictionary)
+
 
 # Save tokens
 if (!file.exists("data")) {
@@ -60,8 +71,8 @@ save(dev.corpora, dev2.corpora, dev3.corpora, file = "data\\dev-corpora.RData")
 save(dev.tokens, dev.word.count, file = "data\\dev-tokens.RData")
 save(dev2.tokens, dev2.word.count, file = "data\\dev2-tokens.RData")
 save(dev3.tokens, dev3.word.count, file = "data\\dev3-tokens.RData")
-save(training.tokens, training.word.count, 
-     file = "data\\training-tokens.RData")
-save(validation.tokens, file = "data\\validation-tokens.RData")
-save(test.tokens, file = "data\\test-tokens.RData")
+# save(training.tokens, training.word.count, 
+#      file = "data\\training-tokens.RData")
+# save(validation.tokens, file = "data\\validation-tokens.RData")
+# save(test.tokens, file = "data\\test-tokens.RData")
 
