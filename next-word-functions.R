@@ -113,8 +113,7 @@ CountTrigrams <- function(token.list) {
   trigram.dt <- data.table(do.call(rbind, trigram.list))
   names(trigram.dt) <- c("word1", "word2", "word3")
 
-  trigram.count <- trigram.dt[, count:=.N, by = .(word1, word2, word3)]
-  trigram.count <- unique(trigram.count[count > 1])
+  trigram.count <- unique(trigram.dt[, count:=.N, by = .(word1, word2, word3)])
   setorder(trigram.count, word1, word2, -count)
   setkey(trigram.count, word1, word2)
   
@@ -131,22 +130,32 @@ BuildTrigramModel <- function(trigram.count) {
   #
   # Returns:
   #   A data.table with a row for each bigram
-  
+
+  trigram.rows <- trigram.count[, sum(count)]
+  trigram.totals <- trigram.count[, sum(count),by=.(word1, word2)]
+    
   # Return the top 5 rows for each bigram - Data tables are awesome! 
-  trigram.top5 <- trigram.count[word3 != "<UNK>", .SD[1:min(5, .N)], by=.(word1, word2)]
+  trigram.top5 <- trigram.count[count != 1 & word3 != "<UNK>", 
+                                .SD[1:min(5, .N)], by=.(word1, word2)]
   trigram.top5[, answer:=(1:.N), by=.(word1, word2)]
   
   # Cast the data.table, so there is a single row for each bigram
   trigram.wide <- dcast(trigram.top5, word1 + word2 ~ answer, 
                          value.var = c("word3", "count"))
-  trigram.totals <- trigram.count[, sum(count),by=.(word1, word2)]
-  trigram.model <- trigram.wide[trigram.totals] %>%
+  trigram.model <- trigram.totals[trigram.wide] %>%
     mutate(pr_1 = signif(count_1 / V1, 2),
            pr_2 = signif(count_2 / V1, 2),
            pr_3 = signif(count_3 / V1, 2),
            pr_4 = signif(count_4 / V1, 2),
            pr_5 = signif(count_5 / V1, 2)) %>%
     select(starts_with("word"), starts_with("pr"))
+  
+  # TODO: Is perplexity calculated correctly?
+  trigram.perplexity <- trigram.top5[trigram.totals, 
+                                     perplexity:=((count / V1) ^ (count / trigram.rows))]
+  perplexity <<- signif(trigram.perplexity[, prod(perplexity)], 3)
+  
+  trigram.model
 }  
   
 

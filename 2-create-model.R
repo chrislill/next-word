@@ -4,17 +4,22 @@ source("next-word-functions.R")
 
 # Load data
 # load("data\\dev-corpora.RData")
-# load("data\\dev-tokens.RData")
-# load("data\\dev2-tokens.RData")
+load("data\\dev-tokens.RData")
+load("data\\dev2-tokens.RData")
 load("data\\dev3-tokens.RData")
-load("data\\training-tokens.RData")
+# load("data\\training-tokens.RData")
 
 # Initialise metrics
 start.time <- Sys.time()
+gc()
 mem.before <- mem_used()
 
+# Declare Perplexity as a system level variable which can be modified from 
+# within BuildTrigramModel()
+perplexity <- numeric()
+
 # Create model
-trigram.count <- CountTrigrams(dev3.tokens)
+trigram.count <- CountTrigrams(dev.tokens)
 trigram.model <- BuildTrigramModel(trigram.count)
 
 # Add metrics
@@ -27,7 +32,8 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.before = format(capture.output(mem.before)),
                      mem.after,
                      mem.model,
-                     comment = "Restructured model with one row per bigram")
+                     perplexity,
+                     comment = "Change join in trigram model, and measure perplexity")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)
@@ -40,7 +46,7 @@ save(metrics, file = "data\\metrics.RData")
 if (!file.exists("models")) {
   dir.create("models")
 }
-save(trigram.model, start.time, file = "models\\training-model.RData")
+save(trigram.model, start.time, file = "models\\training.RData")
 
 
 
