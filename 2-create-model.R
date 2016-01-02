@@ -32,6 +32,8 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.before = format(capture.output(mem.before)),
                      mem.after,
                      mem.model,
+                     accuracy = NA,
+                     first.5.accuracy = NA,
                      perplexity,
                      comment = "Change join in trigram model, and measure perplexity")
 if(file.exists("data\\metrics.RData")) {

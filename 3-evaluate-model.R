@@ -8,19 +8,20 @@ if(!exists("trigram.model")) {
 }
 
 # Load validation data --------------------------------------------------------
-if(!exists("validation.trigrams")) {
-  if(!file.exists("data\\validation-trigrams.RData")) {
+if(!exists("val.trigrams")) {
+  if(!file.exists("data\\val-trigrams.RData")) {
     load("data\\validation-tokens.RData")
-    validation.trigrams <- CountTrigrams(validation.tokens)
-    save(validation.trigrams, file = "data\\validation-trigrams.RData")
+    val.trigrams <- CountTrigrams(validation.tokens)
+    save(val.trigrams, file = "data\\val-trigrams.RData")
   }
-  load("data\\validation-trigrams.RData")
+  load("data\\val-trigrams.RData")
 } 
 
 # Evaluate --------------------------------------------------------------------
 # TODO: Load the 30% dataset and compare accuracy
 eval.start <- Sys.time()
-val.results <- trigram.model[validation.trigrams]
+set.seed(1234)
+val.results <- trigram.model[val.trigrams[sample(nrow(val.trigrams), 200000), ]]
 val.results[, accuracy:=(word3 == word3_1)]
 
 # TODO: There is definitely a more elegant way to do this...
@@ -49,9 +50,8 @@ this.eval <- cbind(start.time = format(start.time),
                    records = nrow(val.results),
                    accuracy,
                    first.5.accuracy,
-                   perplexity,
                    runtime,
-                   comment = "Full validation")
+                   comment = "Reduced validation")
 if(file.exists("data\\eval-accuracy.RData")) {
   load("data\\eval-accuracy.RData")
   eval.accuracy <- rbind(eval.accuracy, this.eval)
@@ -59,4 +59,12 @@ if(file.exists("data\\eval-accuracy.RData")) {
   eval.accuracy <- data.frame(this.eval, stringsAsFactors = FALSE)
 }
 save(eval.accuracy, file = "data\\eval-accuracy.RData")
+
+load("data\\metrics.RData")
+metrics[metrics$start.time == format(start.time),c("accuracy", "first.5.accuracy")] =
+  c(accuracy, first.5.accuracy)
+save(metrics, file = "data\\metrics.RData")
+
+
+
 
