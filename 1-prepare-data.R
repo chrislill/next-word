@@ -1,4 +1,4 @@
-source("next-word-functions.R")
+source("tokenise-functions.R")
 
 # Download file and unzip
 if(!file.exists("Coursera-SwiftKey.zip")) {

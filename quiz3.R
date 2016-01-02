@@ -22,6 +22,46 @@ quiz <- matrix(c("When you breathe, I want to be the air for you. I'll be there 
                  "pictures", "stories", "movies", "novels"),
                ncol = 5, byrow = TRUE)
 
+
+QuizProbabilities <- function (quiz, bigrams) {
+  # Calculates the top 5 probabilities for the next word
+  # Assumes that trigram.model is loaded in memory
+  #
+  # Args:
+  #   bigrams: A tokenised list, containing vectors of words
+  #
+  # Returns:
+  #   A dataframe of words and their probability
+  
+  # bigram <- bigrams[1,]
+  
+  for(i in 1:nrow(quiz)) {
+    suggestions <- trigram.model[trigram.model$word1 == bigrams[i, 1] & 
+                                   trigram.model$word2 == bigrams[i, 2], ]
+    
+    total.records <- sum(suggestions$count)
+    
+    if (nrow(suggestions) > 5) {
+      suggestions <- rbind(suggestions[1:5,],
+                           suggestions[suggestions$word3 %in% quiz[i, 2:5],])
+    }
+    
+    suggestions$question <- quiz[i, 1]
+    suggestions$answer <- as.character(suggestions$word3)
+    suggestions$pr <- signif(suggestions$count / total.records, 2)
+    
+    if(exists("answers")) {
+      answers <- rbind(answers, suggestions[,5:7, with = FALSE])
+    } else {
+      answers <- suggestions[,5:7, with = FALSE]
+    }
+    
+  }
+  
+  answers
+}
+
+
 load(file = "models\\training-model - Counts.RData")
 load(file = "data\\training-tokens.RData")
 quiz.tokens <- sapply(quiz[, 1], TokeniseText)

@@ -1,6 +1,7 @@
 library(dplyr)
 
-source("next-word-functions.R")
+source("tokenise-functions.R")
+source("model-functions.R")
 
 # Load model ------------------------------------------------------------------
 if(!exists("trigram.model")) {
