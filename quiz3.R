@@ -1,4 +1,5 @@
-source("next-word-functions.R")
+source("tokenise-functions.R")
+source("model-functions.R")
 
 quiz <- matrix(c("When you breathe, I want to be the air for you. I'll be there for you, I'd live and I'd", 
                  "eat", "die", "give", "sleep",
@@ -81,4 +82,14 @@ bigrams <- matrix(c(word1, word2), ncol = 2)
 
 
 a1 <- QuizProbabilities(quiz, bigrams)
-# Scores 5.5
+# Scores XX5.5XX 4
+
+
+
+# Rough code for bigrams ------------------------------------------------------
+load(file = "models\\bigram-count.RData")
+
+startword <- sapply(quiz.tokens, LastWord)
+answerword <- unlist(quiz[, 2:5])
+
+a2 <- bigram.count[word1 %in% startword & word2 %in% answerword]

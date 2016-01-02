@@ -1,5 +1,6 @@
 require(dplyr, warn.conflicts = FALSE)
 require(data.table, warn.conflicts = FALSE)
+require(hashr)
 
 
 CreateBigrams <- function(tokens) {
@@ -54,6 +55,36 @@ CreateTrigrams <- function(tokens) {
 }
 
 
+CreateQuadgrams <- function(tokens) {
+  # Creates a simple matrix with a row for each quadgram and a column 
+  # for each word. 
+  #
+  # Args:
+  #   tokens: A vector of words
+  #
+  # Returns:
+  #   A matrix with a row for each quadgram
+  
+  # tokens <- dev3.tokens[[5]]
+  
+  word1 <- vector(mode = "integer")
+  word2 <- vector(mode = "integer")
+  word3 <- vector(mode = "integer")
+  word4 <- vector(mode = "character")
+    
+  if(length(tokens) > 3) {
+    for(i in 1:(length(tokens) - 3)) {
+      word1 <- append(word1, tokens[i])
+      word2 <- append(word2, tokens[i+1])
+      word3 <- append(word3, tokens[i+2])
+      word4 <- append(word4, tokens[i+3])
+    }
+  }
+  # TODO: Hash words, so that it takes up less memory and can run on laptop.
+  m <-matrix(c(word1, word2, word3, word4), ncol = 4)
+}
+
+
 CountBigrams <- function(token.list) {
   # Creates a data.table of unique bigrams and a count of occurances
   #
@@ -64,7 +95,7 @@ CountBigrams <- function(token.list) {
   #   A bigram frequency data.table
   
   # Test data:
-  # token.list <- dev.tokens
+  # token.list <- dev3.tokens
   
   bigram.list <- sapply(token.list, 
                          CreateBigrams, 
@@ -107,6 +138,37 @@ CountTrigrams <- function(token.list) {
   setkey(trigram.count, word1, word2)
   
   trigram.count
+}
+
+
+CountQuadgrams <- function(token.list) {
+  # Creates a data.table of unique quadgrams and a count of occurances
+  #
+  # Args:
+  #   tokens: A tokenised list, containing vectors of words
+  #
+  # Returns:
+  #   A quadgram frequency data.table
+  
+  # Test data:
+  # token.list <- dev3.tokens
+  
+  # TODO: Refactor CreateQuadgrams() to hash word1, word2 and word3
+  # TODO: Or hash word4 and use the dictionary as a lookup
+  quadgram.list <- sapply(token.list, 
+                         CreateQuadgrams, 
+                         simplify = "array", 
+                         USE.NAMES = FALSE)
+
+  quadgram.dt <- data.table(do.call(rbind, quadgram.list))
+  names(quadgram.dt) <- c("word1", "word2", "word3", "word4")
+  
+  quadgram.count <- unique(quadgram.dt[, count:=.N,
+                                       by = .(word1, word2, word3, word4)])
+  setorder(quadgram.count, word1, word2, word3, -count)
+  setkey(quadgram.count, word1, word2, word3)
+  
+  quadgram.count
 }
 
 
@@ -183,5 +245,43 @@ BuildTrigramModel <- function(trigram.count) {
   perplexity <<- signif(trigram.perplexity[, prod(perplexity)], 3)
   
   trigram.model
-}  
+} 
+
+
+BuildQuadgramModel <- function(quadgram.count) {
+  # Creates a model for use in the application. For each trigram it suggests the
+  # top five answers and gives the percentage probabilities.
+  #
+  # Args:
+  #   quadgram.count: A quadgram frequency data.table
+  #
+  # Returns:
+  #   A data.table with a row for each trigram
+  
+  quadgram.rows <- quadgram.count[, sum(count)]
+  quadgram.totals <- quadgram.count[, sum(count),by=.(word1, word2, word3)]
+  
+  # Return the top 5 rows for each trigram - Data tables are awesome! 
+  quadgram.top5 <- quadgram.count[count != 1 & word4 != "<UNK>", 
+                                .SD[1:min(5, .N)], by=.(word1, word2, word3)]
+  quadgram.top5[, answer:=(1:.N), by=.(word1, word2, word3)]
+  
+  # Cast the data.table, so there is a single row for each trigram
+  quadgram.wide <- dcast(quadgram.top5, word1 + word2 + word3 ~ answer, 
+                        value.var = c("word4", "count"))
+  quadgram.model <- quadgram.totals[quadgram.wide] %>%
+    mutate(pr_1 = signif(count_1 / V1, 2),
+           pr_2 = signif(count_2 / V1, 2),
+           pr_3 = signif(count_3 / V1, 2),
+           pr_4 = signif(count_4 / V1, 2),
+           pr_5 = signif(count_5 / V1, 2)) %>%
+    select(starts_with("word"), starts_with("pr"))
+  
+  # TODO: Is perplexity calculated correctly?
+  quadgram.perplexity <- quadgram.top5[quadgram.totals, 
+                           perplexity:=((count / V1) ^ (count / quadgram.rows))]
+  perplexity <<- signif(quadgram.perplexity[, prod(perplexity)], 3)
+  
+  quadgram.model
+} 
   
