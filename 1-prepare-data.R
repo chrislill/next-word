@@ -18,7 +18,6 @@ close(con.twitter)
 close(con.news)
 close(con.blogs)
 
-# TODO: Increase the validation set from 10 - 30% once the algorithms are more performant
 # Partition the data as follows:
 # 60% training set
 # 30% validation set (Currently set to 10%)
@@ -26,14 +25,13 @@ close(con.blogs)
 # 1000 record dev set (from training)
 corpora <- append(twitter, append(blogs, news))
 boundary <- c(floor(0.6 * length(corpora)),
-              floor(0.8 * length(corpora)),
               floor(0.9 * length(corpora)),
               length(corpora))
 set.seed(1234)
 corpora.index <- sample(length(corpora), length(corpora))
 training.corpora <- corpora[corpora.index[1:boundary[1]]]
-validation.corpora <- corpora[corpora.index[(boundary[2] + 1):boundary[3]]]                          
-test.corpora <- corpora[corpora.index[(boundary[3] + 1):boundary[4]]]  
+validation.corpora <- corpora[corpora.index[(boundary[1] + 1):boundary[2]]]                          
+test.corpora <- corpora[corpora.index[(boundary[2] + 1):boundary[3]]]  
 dev.corpora <- training.corpora[1:1000]
 dev2.corpora <- training.corpora[1:10000]
 dev3.corpora <- training.corpora[1:100000]
@@ -42,15 +40,15 @@ dev3.corpora <- training.corpora[1:100000]
 dev.tokens <- sapply(dev.corpora, TokeniseText)
 dev2.tokens <- sapply(dev2.corpora, TokeniseText)
 dev3.tokens <- sapply(dev3.corpora, TokeniseText)
-# training.tokens <- sapply(training.corpora, TokeniseText, USE.NAMES = FALSE)
-# validation.tokens <- sapply(validation.corpora, TokeniseText, USE.NAMES = FALSE)
+training.tokens <- sapply(training.corpora, TokeniseText, USE.NAMES = FALSE)
+validation.tokens <- sapply(validation.corpora, TokeniseText, USE.NAMES = FALSE)
 # test.tokens <- sapply(test.corpora, TokeniseText, USE.NAMES = FALSE)
 
 # Create dictionary with frequent words
 dev.dictionary <- CreateDictionary(dev.tokens)
 dev2.dictionary <- CreateDictionary(dev2.tokens)
 dev3.dictionary <- CreateDictionary(dev3.tokens)
-# training.dictionary <- CreateDictionary(training.tokens)
+training.dictionary <- CreateDictionary(training.tokens)
 
 # Replace tokens that aren't in the dictionary with <UNK>
 dev.tokens <- lapply(dev.tokens, ReplaceUnknownWords, 
@@ -59,20 +57,22 @@ dev2.tokens <- lapply(dev2.tokens, ReplaceUnknownWords,
                       dictionary = dev2.dictionary)
 dev3.tokens <- lapply(dev3.tokens, ReplaceUnknownWords, 
                       dictionary = dev3.dictionary)
-# training.tokens <- lapply(training.tokens, ReplaceUnknownWords,
-#                           dictionary = training.dictionary)
-
+training.tokens <- lapply(training.tokens, ReplaceUnknownWords,
+                          dictionary = training.dictionary)
+validation.tokens <- lapply(validation.tokens, ReplaceUnknownWords,
+                            dictionary = training.dictionary)
 
 # Save tokens
 if (!file.exists("data")) {
   dir.create("data")
 }
+save(corpora, file = "data\\corpora.RData")
 save(dev.corpora, dev2.corpora, dev3.corpora, file = "data\\dev-corpora.RData")
 save(dev.tokens, dev.dictionary, file = "data\\dev-tokens.RData")
 save(dev2.tokens, dev2.dictionary, file = "data\\dev2-tokens.RData")
 save(dev3.tokens, dev3.dictionary, file = "data\\dev3-tokens.RData")
 save(training.tokens, training.dictionary, 
      file = "data\\training-tokens.RData")
-# save(validation.tokens, file = "data\\validation-tokens.RData")
+save(validation.tokens, file = "data\\validation-tokens.RData")
 # save(test.tokens, file = "data\\test-tokens.RData")
 

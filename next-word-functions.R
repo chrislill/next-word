@@ -66,7 +66,6 @@ ReplaceUnknownWords <- function(word.vector, dictionary) {
 }
 
 
-# TODO: Only keep top 5 next words
 CreateTrigrams <- function(tokens) {
   # Creates a simple matrix with a row for each trigram and a column 
   # for each word. 
@@ -91,8 +90,6 @@ CreateTrigrams <- function(tokens) {
     }
   }
   m <-matrix(c(word1, word2, word3), ncol = 3)
-  m[word3 != "<UNK>", ]
-  
 }
 
 
@@ -117,8 +114,6 @@ CountTrigrams <- function(token.list) {
   names(trigram.dt) <- c("word1", "word2", "word3")
 
   trigram.count <- trigram.dt[, count:=.N, by = .(word1, word2, word3)]
-  
-  # TODO: Filter out more low frequency trigrams
   trigram.count <- unique(trigram.count[count > 1])
   setorder(trigram.count, word1, word2, -count)
   setkey(trigram.count, word1, word2)
@@ -138,7 +133,7 @@ BuildTrigramModel <- function(trigram.count) {
   #   A data.table with a row for each bigram
   
   # Return the top 5 rows for each bigram - Data tables are awesome! 
-  trigram.top5 <- trigram.count[, .SD[1:min(5, .N)], by=.(word1, word2)]
+  trigram.top5 <- trigram.count[word3 != "<UNK>", .SD[1:min(5, .N)], by=.(word1, word2)]
   trigram.top5[, answer:=(1:.N), by=.(word1, word2)]
   
   # Cast the data.table, so there is a single row for each bigram
@@ -199,9 +194,6 @@ QuizProbabilities <- function (quiz, bigrams) {
     suggestions <- trigram.model[trigram.model$word1 == bigrams[i, 1] & 
                                    trigram.model$word2 == bigrams[i, 2], ]
     
-    # Remove this when we fix the model to return desc(count)
-    suggestions <- arrange(suggestions, desc(count))
-    
     total.records <- sum(suggestions$count)
     
     if (nrow(suggestions) > 5) {
@@ -214,9 +206,9 @@ QuizProbabilities <- function (quiz, bigrams) {
     suggestions$pr <- signif(suggestions$count / total.records, 2)
 
     if(exists("answers")) {
-      answers <- rbind(answers, suggestions[,5:7])
+      answers <- rbind(answers, suggestions[,5:7, with = FALSE])
     } else {
-      answers <- suggestions[,5:7]
+      answers <- suggestions[,5:7, with = FALSE]
     }
     
   }

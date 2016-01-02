@@ -6,21 +6,16 @@ source("next-word-functions.R")
 # load("data\\dev-corpora.RData")
 # load("data\\dev-tokens.RData")
 # load("data\\dev2-tokens.RData")
-# load("data\\dev3-tokens.RData")
+load("data\\dev3-tokens.RData")
 load("data\\training-tokens.RData")
-# load("data\\validation-tokens.RData")
-
 
 # Initialise metrics
 start.time <- Sys.time()
 mem.before <- mem_used()
 
-
 # Create model
-trigram.count <- CountTrigrams(training.tokens)
+trigram.count <- CountTrigrams(dev3.tokens)
 trigram.model <- BuildTrigramModel(trigram.count)
-# training.trigram.model <- CountTrigrams(training.tokens)
-
 
 # Add metrics
 runtime <- format(Sys.time() - start.time, digits = 3)
