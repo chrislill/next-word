@@ -5,10 +5,10 @@ source("model-functions.R")
 
 # Load data
 # load("data\\dev-corpora.RData")
-# load("data\\dev-tokens.RData")
-# load("data\\dev2-tokens.RData")
+load("data\\dev-tokens.RData")
+load("data\\dev2-tokens.RData")
 load("data\\dev3-tokens.RData")
-# load("data\\training-tokens.RData")
+load("data\\training-tokens.RData")
 
 # Initialise metrics
 start.time <- Sys.time()
@@ -36,7 +36,7 @@ this.metric <- cbind(start.time = format(start.time),
                      accuracy = NA,
                      first.5.accuracy = NA,
                      perplexity,
-                     comment = "Quadgram model with different hash implementation")
+                     comment = "Hash all terms")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)

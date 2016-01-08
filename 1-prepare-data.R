@@ -52,15 +52,15 @@ training.dictionary <- CreateDictionary(training.tokens)
 
 # Replace tokens that aren't in the dictionary with <UNK>
 dev.tokens <- lapply(dev.tokens, ReplaceUnknownWords, 
-                       dictionary = dev.dictionary)
+                       dictionary = dev.dictionary$word)
 dev2.tokens <- lapply(dev2.tokens, ReplaceUnknownWords, 
-                      dictionary = dev2.dictionary)
+                      dictionary = dev2.dictionary$word)
 dev3.tokens <- lapply(dev3.tokens, ReplaceUnknownWords, 
-                      dictionary = dev3.dictionary)
+                      dictionary = dev3.dictionary$word)
 training.tokens <- lapply(training.tokens, ReplaceUnknownWords,
-                          dictionary = training.dictionary)
+                          dictionary = training.dictionary$word)
 validation.tokens <- lapply(validation.tokens, ReplaceUnknownWords,
-                            dictionary = training.dictionary)
+                            dictionary = training.dictionary$word)
 
 # Save tokens
 if (!file.exists("data")) {

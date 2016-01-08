@@ -1,5 +1,6 @@
 require(tm)
 require(data.table, warn.conflicts = FALSE)
+require(hashr)
 
 CreateDictionary <- function(word.token.list) {
   # Creates a dictionary of the 30000 most frequent words, sorted alphabetically
@@ -11,7 +12,7 @@ CreateDictionary <- function(word.token.list) {
   #   A word vector, to be used as a dictionary
   
   # Test data:
-  word.token.list <- training.tokens
+  # word.token.list <- dev3.tokens
   
   word <- unlist(word.token.list, use.names = FALSE)
   
@@ -20,12 +21,14 @@ CreateDictionary <- function(word.token.list) {
 
   # Calculate the minimum word frequency to achieve a dictionary size of 30,000
   # If there are less than 30,000 records, use 1, so we omit unique words
+  # Bug: We get around 3 collisions when doing this hash
   min.frequency <- word.count[30000, count]
   if(is.na(min.frequency)) min.frequency = 1
   
-  dictionary <- sort(word.count[count > min.frequency, word])
-
-  dictionary
+  selected.words <- sort(word.count[count > min.frequency, word])
+  dictionary <- data.table(hash = hash(selected.words), word = selected.words)
+  setkey(dictionary, hash)
+  unique(dictionary)
 }
 
 

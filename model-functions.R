@@ -67,10 +67,12 @@ CreateQuadgrams <- function(tokens) {
   
   # tokens <- dev3.tokens[[5]]
   
+  tokens <- hash(tokens)
+  
   word1 <- vector(mode = "integer")
   word2 <- vector(mode = "integer")
   word3 <- vector(mode = "integer")
-  word4 <- vector(mode = "character")
+  word4 <- vector(mode = "integer")
     
   if(length(tokens) > 3) {
     for(i in 1:(length(tokens) - 3)) {
