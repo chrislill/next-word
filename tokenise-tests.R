@@ -1,5 +1,7 @@
 library(testthat)
 
+source("tokenise-functions.R")
+
 expect_equal(unlist(TokeniseText("Just like")), c("just", "like"))
 expect_equal(unlist(TokeniseText("coast, the")), c("coast", "the"))
 expect_equal(unlist(TokeniseText("don't")), "don't")

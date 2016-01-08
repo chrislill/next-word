@@ -21,7 +21,7 @@ CreateDictionary <- function(word.token.list) {
 
   # Calculate the minimum word frequency to achieve a dictionary size of 30,000
   # If there are less than 30,000 records, use 1, so we omit unique words
-  # Bug: We get around 3 collisions when doing this hash
+  # Remove a couple () of lower frequency words with a duplicate hash
   min.frequency <- word.count[30000, count]
   if(is.na(min.frequency)) min.frequency = 1
   
