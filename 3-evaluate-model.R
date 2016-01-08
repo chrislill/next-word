@@ -5,17 +5,19 @@ source("model-functions.R")
 
 # Load model ------------------------------------------------------------------
 if(!exists("trigram.model")) {
-  load(file = "models\\training-model.RData")
+  # load(file = "models\\training-model.RData")
+  load(file = "models\\dev3-quadgram-model.RData")
 }
 
 # Load validation data --------------------------------------------------------
-if(!exists("val.trigrams")) {
-  if(!file.exists("data\\val-trigrams.RData")) {
+if(!exists("val.ngrams")) {
+  if(!file.exists("data\\val-ngrams.RData")) {
     load("data\\validation-tokens.RData")
-    val.trigrams <- CountTrigrams(validation.tokens)
-    save(val.trigrams, file = "data\\val-trigrams.RData")
+    # TODO: Use <UNK> in val.tokens
+    val.ngrams <- BuildValNgramTable(validation.tokens[1:1000])
+    save(val.ngrams, file = "data\\val-ngrams.RData")
   }
-  load("data\\val-trigrams.RData")
+  load("data\\val-ngrams.RData")
 } 
 
 # Evaluate --------------------------------------------------------------------

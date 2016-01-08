@@ -318,4 +318,28 @@ BuildQuadgramModel <- function(quadgram.count) {
   
   quadgram.model
 } 
+
+
+BuildValNgramTable <- function(token.list) {
+  # Creates a Ngram data.table with counts which can be used for evaluation of 
+  # bigrams, trigrams and quadgrams
+  #
+  # Args:
+  #   token.list: A tokenised list, containing vectors of words
+  #
+  # Returns:
+  #   A data.table with a row for each 5-gram
   
+  ngram.list <- sapply(token.list, 
+                          CreateValNgrams, 
+                          simplify = "array", 
+                          USE.NAMES = FALSE)
+  
+  ngram.dt <- data.table(do.call(rbind, ngram.list))
+  names(ngram.dt) <- c("word1", "word2", "word3", "word4", "word5")
+  
+  ngram.count <- unique(ngram.dt[, count:=.N, by = .(word1, word2, word3, word4, word5)])
+  setkey(ngram.count, word1, word2, word3, word4, word5)
+  
+  ngram.count
+} 
