@@ -87,35 +87,33 @@ CreateQuadgrams <- function(tokens) {
 
 
 CreateValNgrams <- function(tokens) {
-  # Creates a simple matrix with a row for each 5-gram and a column 
-  # for each word. The last two rows contain NA values so they can be used to 
+  # Creates a simple matrix with a row for each quadgram and a column 
+  # for each word. The first two rows contain NA values so they can be used to 
   # validate bigrams and trigrams.
   #
   # Args:
   #   tokens: A vector of words
   #
   # Returns:
-  #   A matrix with a row for each 5-gram
+  #   A matrix with a row for each 4-gram
   
   tokens <- hash(tokens)
-  tokens <- append(tokens, c(NA, NA))
+  tokens <- append(c(NA, NA), tokens)
   
   word1 <- vector(mode = "integer")
   word2 <- vector(mode = "integer")
   word3 <- vector(mode = "integer")
-  word4 <- vector(mode = "integer")
-  word5 <- vector(mode = "integer")
+  answer <- vector(mode = "integer")
   
-  if(length(tokens) >= 5) {
-    for(i in 1:(length(tokens) - 4)) {
+  if(length(tokens) >= 4) {
+    for(i in 1:(length(tokens) - 3)) {
       word1 <- append(word1, tokens[i])
       word2 <- append(word2, tokens[i+1])
       word3 <- append(word3, tokens[i+2])
-      word4 <- append(word4, tokens[i+3])
-      word5 <- append(word5, tokens[i+4])
+      answer <- append(answer, tokens[i+3])
     }
   }
-  m <-matrix(c(word1, word2, word3, word4, word5), ncol = 5)
+  m <-matrix(c(word1, word2, word3, answer), ncol = 4)
 }
 
 
@@ -336,10 +334,10 @@ BuildValNgramTable <- function(token.list) {
                           USE.NAMES = FALSE)
   
   ngram.dt <- data.table(do.call(rbind, ngram.list))
-  names(ngram.dt) <- c("word1", "word2", "word3", "word4", "word5")
+  names(ngram.dt) <- c("word1", "word2", "word3", "answer")
   
-  ngram.count <- unique(ngram.dt[, count:=.N, by = .(word1, word2, word3, word4, word5)])
-  setkey(ngram.count, word1, word2, word3, word4, word5)
+  ngram.count <- unique(ngram.dt[, count:=.N, by = .(word1, word2, word3, answer)])
+  setkey(ngram.count, word1, word2, word3, answer)
   
   ngram.count
 } 

@@ -4,55 +4,46 @@ source("tokenise-functions.R")
 source("model-functions.R")
 
 # Load model ------------------------------------------------------------------
-if(!exists("trigram.model")) {
-  # load(file = "models\\training-model.RData")
-  load(file = "models\\dev3-quadgram-model.RData")
-}
+load("models\\training-quadgram-model.RData")
+load("data\\training-dictionary.RData")
+
 
 # Load validation data --------------------------------------------------------
-if(!exists("val.ngrams")) {
-  if(!file.exists("data\\val-ngrams.RData")) {
-    load("data\\validation-tokens.RData")
-    # TODO: Use <UNK> in val.tokens
-    val.ngrams <- BuildValNgramTable(validation.tokens[1:1000])
-    save(val.ngrams, file = "data\\val-ngrams.RData")
-  }
+if(!file.exists("data\\val-ngrams.RData")) {
+  load("data\\validation-tokens.RData")
+  val.ngrams <- BuildValNgramTable(validation.tokens)
+  val.ngrams[, 1:3] <- lapply(val.quadgrams[unmatched, .(word1, word2, word3)],
+                              ReplaceUnknownHashes,
+                              dictionary = training.dictionary$hash)
+  val.ngrams <- unique(val.ngrams[, count = sum(count), by = .(word1, word2, word3,
+                                                       answer)])
+  save(val.ngrams, file = "data\\val-ngrams.RData")
+} else {
   load("data\\val-ngrams.RData")
-} 
+}
 
 # Evaluate --------------------------------------------------------------------
-# TODO: Load the 30% dataset and compare accuracy
 eval.start <- Sys.time()
-set.seed(1234)
-val.results <- trigram.model[val.trigrams[sample(nrow(val.trigrams), 200000), ]]
-val.results[, accuracy:=(word3 == word3_1)]
+
+val.results <- quadgram.model[val.ngrams[!is.na(word1)]]
+val.results[, accuracy:=(answer == word4_1)]
 
 # TODO: There is definitely a more elegant way to do this...
-val.results[, first.5.accuracy:=(word3 == word3_1 | 
-                                   word3 == word3_2 | 
-                                   word3 == word3_3 | 
-                                   word3 == word3_4 | 
-                                   word3 == word3_5 )]
-val.results[, perplexity:=(sum((word3 == word3_1) / pr_1,
-                               (word3 == word3_2) / pr_2,
-                               (word3 == word3_3) / pr_3,
-                               (word3 == word3_4) / pr_4,
-                               (word3 == word3_5) / pr_5,
-                               na.rm = TRUE)), by=.(word1, word2, word3)]
-val.eval <- val.results[, list(sum(count),
+val.results[, top.3.accuracy:=(answer == word4_1 | 
+                                 answer == word4_2 | 
+                                 answer == word4_3 )]
+val.eval <- val.results[, list(sum(count, na.rm = TRUE),
                                sum(accuracy * count, na.rm = TRUE),
-                               sum(first.5.accuracy * count, na.rm = TRUE),
-                               prod(perplexity ^ count))]
+                               sum(top.3.accuracy * count, na.rm = TRUE))]
 accuracy <- round(val.eval[[1, 2]] / val.eval[[1, 1]], 3)
-first.5.accuracy <- round(val.eval[[1, 3]] / val.eval[[1, 1]], 3)
-perplexity <- round(val.eval[[1, 4]] ^ (1 / val.eval[[1, 1]]), 3)
+top.3.accuracy <- round(val.eval[[1, 3]] / val.eval[[1, 1]], 3)
 
 # Metrics for evaluation accuracy ---------------------------------------------
 runtime <- format(Sys.time() - eval.start, digits = 3)
 this.eval <- cbind(start.time = format(start.time),
                    records = nrow(val.results),
                    accuracy,
-                   first.5.accuracy,
+                   top.3.accuracy,
                    runtime,
                    comment = "Reduced validation")
 if(file.exists("data\\eval-accuracy.RData")) {
@@ -64,8 +55,8 @@ if(file.exists("data\\eval-accuracy.RData")) {
 save(eval.accuracy, file = "data\\eval-accuracy.RData")
 
 load("data\\metrics.RData")
-metrics[metrics$start.time == format(start.time),c("accuracy", "first.5.accuracy")] =
-  c(accuracy, first.5.accuracy)
+metrics[metrics$start.time == format(start.time),c("accuracy", "top.3.accuracy")] =
+  c(accuracy, top.3.accuracy)
 save(metrics, file = "data\\metrics.RData")
 
 
