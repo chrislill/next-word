@@ -23,7 +23,6 @@ expect_equal(dev.tokens[[19]][1], "that's")
              
 
 # Test CreateDictionary() -----------------------------------------------------
-
 dev.dictionary <- CreateDictionary(dev.tokens, 10000)
 short.dictionary <- CreateDictionary(dev.tokens, 10)
 
@@ -34,9 +33,20 @@ expect_equal(nrow(short.dictionary), 10)
 
 
 # Test RemoveUnknownWords() ---------------------------------------------------
+dev.tokens.1 <- ReplaceUnknownWords(dev.tokens[[1]], dev.dictionary$word)
+
+expect_equal(dev.tokens.1[8], "<UNK>")
+expect_equal(dev.tokens.1[2], "in")
+expect_equal(length(dev.tokens.1), 8)
 
 
-
+# Performance of RemoveUnknownWords() -----------------------------------------
+# Tries a data.table, or leaving words in frequency order, but it didn't 
+# improve performance
+# dev3.tokens <- TokeniseText(dev3.corpora)
+# dev3.dictionary <- CreateDictionary(dev3.tokens, 10000)
+# system.time(lapply(dev3.tokens, ReplaceUnknownWords, 
+#                    dictionary = dev3.dictionary$word))
 
 
 
