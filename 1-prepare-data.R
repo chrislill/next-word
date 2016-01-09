@@ -45,10 +45,10 @@ validation.tokens <- sapply(validation.corpora, TokeniseText, USE.NAMES = FALSE)
 # test.tokens <- sapply(test.corpora, TokeniseText, USE.NAMES = FALSE)
 
 # Create dictionary with frequent words
-dev.dictionary <- CreateDictionary(dev.tokens)
-dev2.dictionary <- CreateDictionary(dev2.tokens)
-dev3.dictionary <- CreateDictionary(dev3.tokens)
-training.dictionary <- CreateDictionary(training.tokens)
+dev.dictionary <- CreateDictionary(dev.tokens, 20000)
+dev2.dictionary <- CreateDictionary(dev2.tokens, 20000)
+dev3.dictionary <- CreateDictionary(dev3.tokens, 20000)
+training.dictionary <- CreateDictionary(training.tokens, 30000)
 
 # Replace tokens that aren't in the dictionary with <UNK>
 dev.tokens <- lapply(dev.tokens, ReplaceUnknownWords, 
