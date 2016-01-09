@@ -63,14 +63,15 @@ training.tokens <- lapply(training.tokens, ReplaceUnknownWords,
 # Save tokens
 if (!file.exists("data")) {
   dir.create("data")
+  dir.create("models")
 }
 save(corpora, file = "data\\corpora.RData")
 save(dev.corpora, dev2.corpora, dev3.corpora, file = "data\\dev-corpora.RData")
 save(dev.tokens, dev.dictionary, file = "data\\dev-tokens.RData")
 save(dev2.tokens, dev2.dictionary, file = "data\\dev2-tokens.RData")
 save(dev3.tokens, dev3.dictionary, file = "data\\dev3-tokens.RData")
-save(training.tokens, training.dictionary, 
-     file = "data\\training-tokens.RData")
+save(training.dictionary, file = "models\\training-dictionary.RData")
+save(training.tokens, file = "data\\training-tokens.RData")
 save(validation.tokens, file = "data\\validation-tokens.RData")
 # save(test.tokens, file = "data\\test-tokens.RData")
 

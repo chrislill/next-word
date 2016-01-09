@@ -7,7 +7,8 @@ source("model-functions.R")
 # load("data\\dev-tokens.RData")
 # load("data\\dev2-tokens.RData")
 # load("data\\dev3-tokens.RData")
-load("data\\training-tokens.RData")
+# load("data\\training-tokens.RData")
+# load("data\\training-dictionary.RData")
 
 # Initialise metrics
 start.time <- Sys.time()
@@ -44,10 +45,6 @@ if(file.exists("data\\metrics.RData")) {
   }
 save(metrics, file = "data\\metrics.RData")
 
-# Save model
-if (!file.exists("models")) {
-  dir.create("models")
-}
 save(bigram.model, start.time, file = "models\\training-bigram-model.RData")
 
 

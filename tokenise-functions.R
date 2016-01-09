@@ -46,6 +46,21 @@ ReplaceUnknownWords <- function(word.vector, dictionary) {
 }
 
 
+ReplaceUnknownHashes <- function(hash.vector, dictionary.hash) {
+  # Replaces hashes that aren't in the dictionary with hash <UNK>
+  #
+  # Args:
+  #   hash.vector: A vector of hashes
+  #   dictionary.hash: A vector of frequent hashes
+  #
+  # Returns:
+  #   A hash vector
+  
+  hash.vector[!(hash.vector %in% dictionary.hash)] = hash("<UNK>")
+  hash.vector
+}
+
+
 # TODO: Sentence segmentation <S>
 # TODO: <UNK> to handle missing words
 TokeniseText <- function(documents) {

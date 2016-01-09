@@ -40,6 +40,14 @@ expect_equal(dev.tokens.1[2], "in")
 expect_equal(length(dev.tokens.1), 8)
 
 
+# Test RemoveUnknownHashes() ---------------------------------------------------
+hash.tokens.1 <- ReplaceUnknownHashes(hash(dev.tokens[[1]]), dev.dictionary$hash)
+
+expect_equal(hash.tokens.1[8], hash("<UNK>"))
+expect_equal(hash.tokens.1[2], hash("in"))
+expect_equal(length(hash.tokens.1), 8)
+
+
 # Performance of RemoveUnknownWords() -----------------------------------------
 # Tries a data.table, or leaving words in frequency order, but it didn't 
 # improve performance
