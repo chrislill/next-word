@@ -59,8 +59,6 @@ dev3.tokens <- lapply(dev3.tokens, ReplaceUnknownWords,
                       dictionary = dev3.dictionary$word)
 training.tokens <- lapply(training.tokens, ReplaceUnknownWords,
                           dictionary = training.dictionary$word)
-validation.tokens <- lapply(validation.tokens, ReplaceUnknownWords,
-                            dictionary = training.dictionary$word)
 
 # Save tokens
 if (!file.exists("data")) {

@@ -26,7 +26,7 @@ CreateDictionary <- function(word.token.list, max.length) {
   
   selected.words <- sort(word.count[count >= min.frequency, word])
   dictionary <- data.table(hash = hash(selected.words), word = selected.words)
-  setkey(dictionary, hash, word)
+  setkey(dictionary, hash)
   unique(dictionary)
 }
 
