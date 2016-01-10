@@ -18,7 +18,7 @@ mem.before <- mem_used()
 
 # Declare Perplexity as a system level variable which can be modified from 
 # within BuildNgramModel()
-perplexity <- numeric()
+# perplexity <- numeric()
 
 # Create model
 quadgram.count <- CountQuadgrams(dev3.tokens)
@@ -35,8 +35,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.after,
                      mem.model,
                      accuracy = NA,
-                     first.5.accuracy = NA,
-                     perplexity,
+                     top.3.accuracy = NA,
                      comment = "Hash all terms")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
@@ -46,8 +45,7 @@ if(file.exists("data\\metrics.RData")) {
   }
 save(metrics, file = "data\\metrics.RData")
 
-save(quadgram.model, start.time, file = "models\\dev3-quadgram-model.RData")
-
+save(quadgram.model, start.time, file = "models\\training-quadgram-model.RData")
 
 
 

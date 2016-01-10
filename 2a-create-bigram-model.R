@@ -17,7 +17,7 @@ mem.before <- mem_used()
 
 # Declare Perplexity as a system level variable which can be modified from 
 # within BuildTrigramModel()
-perplexity <- numeric()
+# perplexity <- numeric()
 
 # Create model
 bigram.count <- CountBigrams(training.tokens)
@@ -34,9 +34,8 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.after,
                      mem.model,
                      accuracy = NA,
-                     first.5.accuracy = NA,
-                     perplexity,
-                     comment = "First bigram model")
+                     top.3.accuracy = NA,
+                     comment = "Hashed bigram model")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)
