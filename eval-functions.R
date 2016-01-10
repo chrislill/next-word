@@ -1,3 +1,4 @@
+require(dplyr, warn.conflicts = FALSE)
 require(data.table, warn.conflicts = FALSE)
 
 load("data\\training-dictionary.RData")
