@@ -7,8 +7,8 @@ source("model-functions.R")
 # load("data\\dev-tokens.RData")
 # load("data\\dev2-tokens.RData")
 # load("data\\dev3-tokens.RData")
-# load("data\\training-tokens.RData")
-# load("data\\training-dictionary.RData")
+load("data\\training-tokens.RData")
+load("data\\training-dictionary.RData")
 
 # Initialise metrics
 start.time <- Sys.time()

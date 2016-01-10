@@ -28,7 +28,7 @@ if(!file.exists("data\\val-ngrams.RData")) {
 # Evaluate --------------------------------------------------------------------
 eval.start <- Sys.time()
 
-val.results <- model[val.ngrams[!is.na(word.3)]]
+val.results <- model[val.ngrams]
 val.results[, accuracy:=(outcome == answer_1)]
 
 # TODO: There is definitely a more elegant way to do this...
@@ -48,7 +48,7 @@ this.eval <- cbind(eval.start = format(eval.start),
                    accuracy,
                    top.3.accuracy,
                    runtime,
-                   comment = "Hashed trgram model")
+                   comment = "Trigram model with words in the right order")
 if(file.exists("data\\eval-accuracy.RData")) {
   load("data\\eval-accuracy.RData")
   eval.accuracy <- rbind(eval.accuracy, this.eval)

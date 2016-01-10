@@ -35,7 +35,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.model,
                      accuracy = NA,
                      top.3.accuracy = NA,
-                     comment = "Hashed trigram model")
+                     comment = "Trigram model with words in correct order")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)

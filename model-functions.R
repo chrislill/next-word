@@ -55,7 +55,7 @@ CreateTrigrams <- function(tokens) {
       answer <- append(answer, tokens[i+2])
     }
   }
-  m <-matrix(c(word.1, word.2, answer), ncol = 3)
+  m <-matrix(c(word.2, word.1, answer), ncol = 3)
 }
 
 
@@ -222,7 +222,7 @@ BuildBigramModel <- function(bigram.count) {
   bigram.totals <- bigram.count[, sum(count),by=.(word.1)]
   
   # Return the top 5 rows for each unigram - Data tables are awesome! 
-  bigram.top5 <- bigram.count[count != 1 & answer != "<UNK>", 
+  bigram.top5 <- bigram.count[count != 1 & answer != hash("<UNK>"), 
                                 .SD[1:min(5, .N)], by=.(word.1)]
   bigram.top5[, rank:=(1:.N), by=.(word.1)]
   
@@ -260,7 +260,7 @@ BuildTrigramModel <- function(trigram.count) {
   trigram.totals <- trigram.count[, sum(count),by=.(word.1, word.2)]
     
   # Return the top 5 rows for each bigram - Data tables are awesome! 
-  trigram.top5 <- trigram.count[count != 1 & answer != "<UNK>", 
+  trigram.top5 <- trigram.count[count != 1 & answer != hash("<UNK>"), 
                                 .SD[1:min(5, .N)], by=.(word.1, word.2)]
   trigram.top5[, rank:=(1:.N), by=.(word.1, word.2)]
   
@@ -298,7 +298,7 @@ BuildQuadgramModel <- function(quadgram.count) {
   quadgram.totals <- quadgram.count[, sum(count),by=.(word.1, word.2, word.3)]
   
   # Return the top 5 rows for each trigram - Data tables are awesome! 
-  quadgram.top5 <- quadgram.count[count != 1 & answer != "<UNK>", 
+  quadgram.top5 <- quadgram.count[count != 1 & answer != hash("<UNK>"), 
                                 .SD[1:min(5, .N)], by=.(word.1, word.2, word.3)]
   quadgram.top5[, rank:=(1:.N), by=.(word.1, word.2, word.3)]
   
