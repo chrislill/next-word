@@ -61,7 +61,7 @@ training.tokens <- lapply(training.tokens, ReplaceUnknownWords,
                           dictionary = training.dictionary$word)
 
 # Save tokens
-if (!file.exists("data")) {
+if (!file.exists("models")) {
   dir.create("data")
   dir.create("models")
 }

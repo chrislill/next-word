@@ -9,7 +9,7 @@ source("model-functions.R")
 # load("data\\dev2-tokens.RData")
 # load("data\\dev3-tokens.RData")
 # load("data\\training-tokens.RData")
-# load("data\\training-dictionary.RData")
+# load("models\\training-dictionary.RData")
 
 # Initialise metrics
 start.time <- Sys.time()
@@ -35,7 +35,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.after,
                      mem.model,
                      accuracy = NA,
-                     top.3.accuracy = NA,
+                     top.5.accuracy = NA,
                      comment = "Hash all terms")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
