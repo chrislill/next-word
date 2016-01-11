@@ -4,10 +4,10 @@ source("tokenise-functions.R")
 source("model-functions.R")
 
 # Load model ------------------------------------------------------------------
-load("models\\training-dictionary.RData")
+# load("models\\training-dictionary.RData")
 # load("models\\training-bigram-model.RData")
 # load("models\\training-trigram-model.RData")
-load("models\\training-quadgram-model.RData")
+# load("models\\training-quadgram-model.RData")
 model <- quadgram.model
 
 
@@ -15,10 +15,10 @@ model <- quadgram.model
 if(!file.exists("data\\val-ngrams.RData")) {
   load("data\\validation-tokens.RData")
   val.ngrams <- BuildValNgramTable(validation.tokens)
-  val.ngrams[, 1:3] <- lapply(val.quadgrams[unmatched, .(word.1, word.2, word.3)],
+  val.ngrams[, 1:3] <- lapply(val.ngrams[, .(word.1, word.2, word.3)],
                               ReplaceUnknownHashes,
                               dictionary = training.dictionary$hash)
-  val.ngrams <- unique(val.ngrams[, count = sum(count), by = .(word.1, word.2, word.3,
+  val.ngrams <- unique(val.ngrams[, count := sum(count), by = .(word.1, word.2, word.3,
                                                        outcome)])
   save(val.ngrams, file = "data\\val-ngrams.RData")
 } else {
@@ -50,7 +50,7 @@ this.eval <- cbind(eval.start = format(eval.start),
                    accuracy,
                    top.5.accuracy,
                    runtime,
-                   comment = "Rerun models with 30000 dictionary to get top.5")
+                   comment = "Try 8000 dictionary")
 if(file.exists("data\\eval-accuracy.RData")) {
   load("data\\eval-accuracy.RData")
   eval.accuracy <- rbind(eval.accuracy, this.eval)

@@ -8,8 +8,8 @@ source("model-functions.R")
 # load("data\\dev-tokens.RData")
 # load("data\\dev2-tokens.RData")
 # load("data\\dev3-tokens.RData")
-# load("data\\training-tokens.RData")
-# load("models\\training-dictionary.RData")
+load("data\\training-tokens.RData")
+load("models\\training-dictionary.RData")
 
 # Initialise metrics
 start.time <- Sys.time()
@@ -21,7 +21,7 @@ mem.before <- mem_used()
 # perplexity <- numeric()
 
 # Create model
-quadgram.count <- CountQuadgrams(dev3.tokens)
+quadgram.count <- CountQuadgrams(training.tokens)
 quadgram.model <- BuildQuadgramModel(quadgram.count)
 
 # Add metrics
@@ -29,14 +29,14 @@ runtime <- format(Sys.time() - start.time, digits = 3)
 mem.after <- format(capture.output(mem_used()))
 mem.model <- format(capture.output(object_size(quadgram.model)))
 this.metric <- cbind(start.time = format(start.time),
-                     records = length(dev3.tokens),
+                     records = length(training.tokens),
                      runtime,
                      mem.before = format(capture.output(mem.before)),
                      mem.after,
                      mem.model,
                      accuracy = NA,
                      top.5.accuracy = NA,
-                     comment = "Hash all terms")
+                     comment = "Quadgram with 8000 Dictionary size")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)

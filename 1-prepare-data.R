@@ -31,32 +31,32 @@ set.seed(1234)
 corpora.index <- sample(length(corpora), length(corpora))
 training.corpora <- corpora[corpora.index[1:boundary[1]]]
 validation.corpora <- corpora[corpora.index[(boundary[1] + 1):boundary[2]]]                          
-test.corpora <- corpora[corpora.index[(boundary[2] + 1):boundary[3]]]  
-dev.corpora <- training.corpora[1:1000]
-dev2.corpora <- training.corpora[1:10000]
-dev3.corpora <- training.corpora[1:100000]
+# test.corpora <- corpora[corpora.index[(boundary[2] + 1):boundary[3]]]  
+# dev.corpora <- training.corpora[1:1000]
+# dev2.corpora <- training.corpora[1:10000]
+# dev3.corpora <- training.corpora[1:100000]
 
 # Tokenise
-dev.tokens <- sapply(dev.corpora, TokeniseText)
-dev2.tokens <- sapply(dev2.corpora, TokeniseText)
-dev3.tokens <- sapply(dev3.corpora, TokeniseText)
+# dev.tokens <- sapply(dev.corpora, TokeniseText)
+# dev2.tokens <- sapply(dev2.corpora, TokeniseText)
+# dev3.tokens <- sapply(dev3.corpora, TokeniseText)
 training.tokens <- sapply(training.corpora, TokeniseText, USE.NAMES = FALSE)
 validation.tokens <- sapply(validation.corpora, TokeniseText, USE.NAMES = FALSE)
 # test.tokens <- sapply(test.corpora, TokeniseText, USE.NAMES = FALSE)
 
 # Create dictionary with frequent words
-dev.dictionary <- CreateDictionary(dev.tokens, 20000)
-dev2.dictionary <- CreateDictionary(dev2.tokens, 20000)
-dev3.dictionary <- CreateDictionary(dev3.tokens, 20000)
-training.dictionary <- CreateDictionary(training.tokens, 30000)
+# dev.dictionary <- CreateDictionary(dev.tokens, 20000)
+# dev2.dictionary <- CreateDictionary(dev2.tokens, 20000)
+# dev3.dictionary <- CreateDictionary(dev3.tokens, 20000)
+training.dictionary <- CreateDictionary(training.tokens, 8000)
 
 # Replace tokens that aren't in the dictionary with <UNK>
-dev.tokens <- lapply(dev.tokens, ReplaceUnknownWords, 
-                       dictionary = dev.dictionary$word)
-dev2.tokens <- lapply(dev2.tokens, ReplaceUnknownWords, 
-                      dictionary = dev2.dictionary$word)
-dev3.tokens <- lapply(dev3.tokens, ReplaceUnknownWords, 
-                      dictionary = dev3.dictionary$word)
+# dev.tokens <- lapply(dev.tokens, ReplaceUnknownWords, 
+#                        dictionary = dev.dictionary$word)
+# dev2.tokens <- lapply(dev2.tokens, ReplaceUnknownWords, 
+#                       dictionary = dev2.dictionary$word)
+# dev3.tokens <- lapply(dev3.tokens, ReplaceUnknownWords, 
+#                       dictionary = dev3.dictionary$word)
 training.tokens <- lapply(training.tokens, ReplaceUnknownWords,
                           dictionary = training.dictionary$word)
 
@@ -65,11 +65,11 @@ if (!file.exists("models")) {
   dir.create("data")
   dir.create("models")
 }
-save(corpora, file = "data\\corpora.RData")
-save(dev.corpora, dev2.corpora, dev3.corpora, file = "data\\dev-corpora.RData")
-save(dev.tokens, dev.dictionary, file = "data\\dev-tokens.RData")
-save(dev2.tokens, dev2.dictionary, file = "data\\dev2-tokens.RData")
-save(dev3.tokens, dev3.dictionary, file = "data\\dev3-tokens.RData")
+# save(corpora, file = "data\\corpora.RData")
+# save(dev.corpora, dev2.corpora, dev3.corpora, file = "data\\dev-corpora.RData")
+# save(dev.tokens, dev.dictionary, file = "data\\dev-tokens.RData")
+# save(dev2.tokens, dev2.dictionary, file = "data\\dev2-tokens.RData")
+# save(dev3.tokens, dev3.dictionary, file = "data\\dev3-tokens.RData")
 save(training.dictionary, file = "models\\training-dictionary.RData")
 save(training.tokens, file = "data\\training-tokens.RData")
 save(validation.tokens, file = "data\\validation-tokens.RData")
