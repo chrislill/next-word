@@ -3,11 +3,14 @@ library(shiny)
 shinyUI(
   fluidPage(
     # tags$head(tags$style("input-text {display:inline;}")),
+    tags$head(tags$script(src="helper.js")),
     titlePanel("Next Word Prediction"),
     mainPanel(
-      p("Type a word, then press <Enter> to predict the next word"),
+      p("Type two words to get started"),
       # Apply style so that display:inline
-      textInput("sentence", NULL, value = "and", width = "800px"),
+      textInput("sentence", NULL, width = "800px"),
+
+      
       fluidRow(
         div(align = "center",
             column(2,
@@ -27,18 +30,23 @@ shinyUI(
                    textOutput("prob5"))
             )
         ),
-      submitButton("Predict"),
+      # submitButton("Predict"),
+      div(style = "height: 30px;"),
       actionButton("reset", "Start again"),
+      div(style = "height: 30px;"),
+#       br(),
+#       textOutput("tokens"),
+#       br(),
+#       textOutput("answers"),
+#       br(),
+#       textOutput("clicked"),
+      # br(),
+      a("Exploratory analysis of the dataset", 
+        href = "http://rpubs.com/chrislill/nextwordmilestone" ),
       br(),
-      textOutput("tokens"),
-      br(),
-      textOutput("answers"),
-      br(),
-      textOutput("clicked"),
-      br(),
-      a("Exploratory analysis of the dataset", href = "http://rpubs.com/chrislill/nextwordmilestone" ),
-      br(),
-      a("Source code on github", href = "https://github.com/chrislill/next-word" )
+      a("Source code on github", 
+        href = "https://github.com/chrislill/next-word"),
+      tags$script("focusOnTextBox()")
       )
     )
   )

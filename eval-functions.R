@@ -2,10 +2,10 @@ require(dplyr, warn.conflicts = FALSE)
 require(data.table, warn.conflicts = FALSE)
 require(hashr)
 
-load("models\\training-dictionary.RData")
-load("models\\training-bigram-model.RData")
-load("models\\training-trigram-model.RData")
-load("models\\training-quadgram-model.RData")
+# load("models\\training-dictionary.RData")
+# load("models\\training-bigram-model.RData")
+# load("models\\training-trigram-model.RData")
+# load("models\\training-quadgram-model.RData")
 
 # Interpolate models ----------------------------------------------------------
 # These coefficients will need to be tuned

@@ -1,47 +1,75 @@
 library(shiny)
 
-source("..\\tokenise-functions.R")
+source("tokenise-functions.R", local = TRUE)
+source("eval-functions.R", local = TRUE)
 
-load("..\\data\\prediction.RData")
-# load("..\\data\\training-dictionary.RData")
-# load("..\\models\\training-trigram-model.RData")
+load("training-dictionary.RData")
+load("training-trigram-model.RData")
 
 shinyServer(function(input, output, session) {
   
-  choice <- reactiveValues(word = NULL)
-  answers <- unlist(prediction[1, 3:7, with = FALSE])
-  probabilities <- unlist(round(prediction[1, 8:12, with = FALSE] * 100))
-  
-  observeEvent(input$answer1, { choice$word <- answers[1] })
-  observeEvent(input$answer2, { choice$word <- answers[2] })
-  observeEvent(input$answer3, { choice$word <- answers[3] })
-  observeEvent(input$answer4, { choice$word <- answers[4] })
-  observeEvent(input$answer5, { choice$word <- answers[5] })
-  
-    #     updateTextInput(session, "sentence", value = paste(input$sentence, "sea"))  
-    
-  output$tokens <- renderText({
-    paste(unlist(TokeniseText(input$sentence)))
+  control <- reactiveValues()
+
+  observeEvent(input$sentence, {
+    tokens <- unlist(TokeniseText(input$sentence))
+    tokens.length <- length(tokens)
+    if(tokens.length > 1) {
+      hash.tokens <- ReplaceUnknownHashes(hash(
+        tokens[(tokens.length - 1):tokens.length]),
+        training.dictionary$hash)
+      prediction <- unlist(trigram.model[
+        word.1 == hash.tokens[2] & word.2 == hash.tokens[1], 
+        3:12, with = FALSE])
+      control$answers <- DLookup(prediction[1:5])
+      control$prob <- round(prediction[6:10] * 100)
+      control$answers[is.na(control$answers)] <- ""
+      control$prob[is.na(control$prob)] <- ""
+    }
   })
   
-  output$answers <- renderText({
-    paste(prediction[,3:7, with = FALSE])
+  observeEvent(input$answer1, {updateTextInput(session, "sentence", value = paste(input$sentence, control$answers[1])) })
+  observeEvent(input$answer2, {updateTextInput(session, "sentence", value = paste(input$sentence, control$answers[2])) })
+  observeEvent(input$answer3, {updateTextInput(session, "sentence", value = paste(input$sentence, control$answers[3])) })
+  observeEvent(input$answer4, {updateTextInput(session, "sentence", value = paste(input$sentence, control$answers[4])) })
+  observeEvent(input$answer5, {updateTextInput(session, "sentence", value = paste(input$sentence, control$answers[5])) })
+  
+  observeEvent(input$reset, {
+    updateTextInput(session, "sentence", value = "")
+    control$answers <- rep("", 5)
+    control$prob <- rep("", 5)
   })
   
-  output$clicked <- renderText({
-    choice$word
-  })
+#   output$tokens <- renderText({
+#     paste(unlist(TokeniseText(input$sentence)))
+#   })
+#   
+#   output$answers <- renderText({
+#     paste(control$answers)
+#   })
+#   
+#   output$clicked <- renderText({
+# #     if (is.null(choice$word)) return ("bob")
+#     choice$word
+#   })
   
-  output$button1 <- renderUI({ actionButton("answer1", label = answers[1]) })
-  output$button2 <- renderUI({ actionButton("answer2", label = answers[2]) })
-  output$button3 <- renderUI({ actionButton("answer3", label = answers[3]) })
-  output$button4 <- renderUI({ actionButton("answer4", label = answers[4]) })
-  output$button5 <- renderUI({ actionButton("answer5", label = answers[5]) })
+  # The javascript function only seems to need to be called once - probably
+  # because the buttons are refreshed when the user clicks an answer
+  output$button1 <- renderUI({list(actionButton("answer1", 
+                                                label = control$answers[1]),
+                                   tags$script("focusOnTextBox()")) })
+  output$button2 <- renderUI({actionButton("answer2", 
+                                           label = control$answers[2]) })
+  output$button3 <- renderUI({actionButton("answer3", 
+                                           label = control$answers[3]) })
+  output$button4 <- renderUI({actionButton("answer4", 
+                                           label = control$answers[4]) })
+  output$button5 <- renderUI({actionButton("answer5", 
+                                           label = control$answers[5]) })
   
-  output$prob1 <- renderText({ paste0(probabilities[1], "%") })
-  output$prob2 <- renderText({ paste0(probabilities[2], "%") })
-  output$prob3 <- renderText({ paste0(probabilities[3], "%") })
-  output$prob4 <- renderText({ paste0(probabilities[4], "%") })
-  output$prob5 <- renderText({ paste0(probabilities[5], "%") })
+  output$prob1 <- renderText({paste0(control$prob[1], "%") })
+  output$prob2 <- renderText({paste0(control$prob[2], "%") })
+  output$prob3 <- renderText({paste0(control$prob[3], "%") })
+  output$prob4 <- renderText({paste0(control$prob[4], "%") })
+  output$prob5 <- renderText({paste0(control$prob[5], "%") })
 
 })
