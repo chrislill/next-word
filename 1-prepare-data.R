@@ -1,13 +1,14 @@
 source("tokenise-functions.R")
 
-# Download file and unzip
+# Download file and unzip -----------------------------------------------------
 if(!file.exists("Coursera-SwiftKey.zip")) {
   training.url <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
   download.file(training.url, "Coursera-SwiftKey.zip")
   unzip("Coursera-SwiftKey.zip")
 }
 
-# Load data
+
+# Load data -------------------------------------------------------------------
 con.twitter <- file("final\\en_US\\en_US.twitter.txt", open="rb")
 con.blogs <- file("final\\en_US\\en_US.blogs.txt", open="rb")
 con.news <- file("final\\en_US\\en_US.news.txt", open="rb")
@@ -18,11 +19,19 @@ close(con.twitter)
 close(con.news)
 close(con.blogs)
 
-# Partition the data as follows:
+
+# Create folders for data -----------------------------------------------------
+if (!file.exists("models")) {
+  dir.create("data")
+  dir.create("models")
+}
+
+
+# Partition the data ----------------------------------------------------------
 # 60% training set
 # 30% validation set (Currently set to 10%)
 # 10% test set
-# 1000 record dev set (from training)
+# Use smaller dev sets to get the models working and optimise performance
 corpora <- append(twitter, append(blogs, news))
 boundary <- c(floor(0.6 * length(corpora)),
               floor(0.9 * length(corpora)),
@@ -35,8 +44,11 @@ validation.corpora <- corpora[corpora.index[(boundary[1] + 1):boundary[2]]]
 # dev.corpora <- training.corpora[1:1000]
 # dev2.corpora <- training.corpora[1:10000]
 # dev3.corpora <- training.corpora[1:100000]
+# save(corpora, file = "data\\corpora.RData")
+# save(dev.corpora, dev2.corpora, dev3.corpora, file = "data\\dev-corpora.RData")
 
-# Tokenise
+
+# Tokenise --------------------------------------------------------------------
 # dev.tokens <- sapply(dev.corpora, TokeniseText)
 # dev2.tokens <- sapply(dev2.corpora, TokeniseText)
 # dev3.tokens <- sapply(dev3.corpora, TokeniseText)
@@ -44,13 +56,20 @@ training.tokens <- sapply(training.corpora, TokeniseText, USE.NAMES = FALSE)
 validation.tokens <- sapply(validation.corpora, TokeniseText, USE.NAMES = FALSE)
 # test.tokens <- sapply(test.corpora, TokeniseText, USE.NAMES = FALSE)
 
-# Create dictionary with frequent words
+save(validation.tokens, file = "data\\validation-tokens.RData")
+# save(test.tokens, file = "data\\test-tokens.RData")
+
+
+# Create dictionary with frequent words ---------------------------------------
 # dev.dictionary <- CreateDictionary(dev.tokens, 20000)
 # dev2.dictionary <- CreateDictionary(dev2.tokens, 20000)
 # dev3.dictionary <- CreateDictionary(dev3.tokens, 20000)
 training.dictionary <- CreateDictionary(training.tokens, 8000)
 
-# Replace tokens that aren't in the dictionary with <UNK>
+save(training.dictionary, file = "models\\training-dictionary.RData")
+
+
+# Replace tokens that aren't in the dictionary with <UNK> ---------------------
 # dev.tokens <- lapply(dev.tokens, ReplaceUnknownWords, 
 #                        dictionary = dev.dictionary$word)
 # dev2.tokens <- lapply(dev2.tokens, ReplaceUnknownWords, 
@@ -60,18 +79,7 @@ training.dictionary <- CreateDictionary(training.tokens, 8000)
 training.tokens <- lapply(training.tokens, ReplaceUnknownWords,
                           dictionary = training.dictionary$word)
 
-# Save tokens
-if (!file.exists("models")) {
-  dir.create("data")
-  dir.create("models")
-}
-# save(corpora, file = "data\\corpora.RData")
-# save(dev.corpora, dev2.corpora, dev3.corpora, file = "data\\dev-corpora.RData")
 # save(dev.tokens, dev.dictionary, file = "data\\dev-tokens.RData")
 # save(dev2.tokens, dev2.dictionary, file = "data\\dev2-tokens.RData")
 # save(dev3.tokens, dev3.dictionary, file = "data\\dev3-tokens.RData")
-save(training.dictionary, file = "models\\training-dictionary.RData")
 save(training.tokens, file = "data\\training-tokens.RData")
-save(validation.tokens, file = "data\\validation-tokens.RData")
-# save(test.tokens, file = "data\\test-tokens.RData")
-

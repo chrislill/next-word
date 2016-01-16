@@ -2,12 +2,10 @@ library(shiny)
 
 shinyUI(
   fluidPage(
-    # tags$head(tags$style("input-text {display:inline;}")),
     tags$head(tags$script(src="helper.js")),
     titlePanel("Next Word Prediction"),
     mainPanel(
       p("Type two words to get started"),
-      # Apply style so that display:inline
       textInput("sentence", NULL, width = "800px"),
 
       
