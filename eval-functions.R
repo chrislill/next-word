@@ -7,10 +7,23 @@ require(hashr)
 # load("models\\training-trigram-model.RData")
 # load("models\\training-quadgram-model.RData")
 
-# Interpolate models ----------------------------------------------------------
 # These coefficients will need to be tuned
 coefficient.trigram <- 0.6
 coefficient.quadgram <- 0.3
+
+
+DLookup <- function(x) {
+  # Looks up a word from training.dictionary, which must be loaded
+  #
+  # Args:
+  #   x: A hash of a word in dictionary 
+  #
+  # Returns:
+  #   The corresponding word
+  
+  training.dictionary[data.table(x), word]
+}
+
 
 InterpolateModels <- function(input.trigram) {
   # Predicts a single word from a vector of three words, interpolated from the
@@ -60,18 +73,6 @@ InterpolateModels <- function(input.trigram) {
   DLookup(a3[1,1])
  
 }
-
-
-
-
-
-
-
-# Dictionary Lookup -----------------------------------------------------------
-DLookup <- function(x) {
-  training.dictionary[data.table(x), word]
-}
-
 
 
 # Decode ngram models ---------------------------------------------------------

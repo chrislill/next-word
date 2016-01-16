@@ -18,5 +18,3 @@ trigram <- c("to", "the", "sea")
 expect_equal(InterpolateModels(trigram), "shore")
 
 
-
-
