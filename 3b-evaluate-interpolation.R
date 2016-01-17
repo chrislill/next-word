@@ -50,25 +50,26 @@ quadgram.inputs[, pr := pr * lambda.quadgram]
 ngram.inputs <- rbindlist(list(bigram.inputs, trigram.inputs, quadgram.inputs), 
                           use.names = TRUE)
 rm(bigram.inputs, trigram.inputs, quadgram.inputs)
+setkey(ngram.inputs, word.1, word.2, word.3)
 ngram.inputs <- unique(ngram.inputs[, pr := sum(pr),
                                      by = .(word.1, word.2, word.3, answer)])
 setorder(ngram.inputs, word.1, word.2, word.3, -pr)
-setkey(ngram.inputs, word.1, word.2, word.3)
 
-# Return the top 5 rows for each trigram - Data tables are awesome! 
+
+# Add rank, so that we can return the top 5 rows 
 ngram.inputs[, rank:=(1:.N), by=.(word.1, word.2, word.3)]
 
 
 # Cast the data.table, so there is a single row for each trigram
-interpolated.model <- dcast(ngram.inputs[rank <= 5], 
-                            word.1 + word.2 + word.3 ~ rank,
-                            value.var = c("answer", "pr"))
+interpolated.answers <- dcast(ngram.inputs[rank <= 5], 
+                              word.1 + word.2 + word.3 ~ rank,
+                              value.var = c("answer", "pr"))
 
 # ngram.inputs takes a lot of memory
 rm(ngram.inputs)
 
 # Merge with the answers from the validation set and evaluate -----------------
-val.results <- interpolated.model[val.ngrams]
+val.results <- interpolated.answers[val.ngrams]
 val.results[, accuracy:=(outcome == answer_1)]
 
 # TODO: There is probably a more elegant way to do this...

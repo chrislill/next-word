@@ -46,8 +46,9 @@ ReplaceUnknownWords <- function(word.vector, dictionary) {
 }
 
 
-ReplaceUnknownHashes <- function(hash.vector, dictionary.hash) {
+ReplaceUnknownHashes <- function(hash.vector) {
   # Replaces hashes that aren't in the dictionary with hash <UNK>
+  # Assumes that training.dictionary is in the parent environment
   #
   # Args:
   #   hash.vector: A vector of hashes
@@ -56,7 +57,7 @@ ReplaceUnknownHashes <- function(hash.vector, dictionary.hash) {
   # Returns:
   #   A hash vector
   
-  hash.vector[!(hash.vector %in% dictionary.hash)] = hash("<UNK>")
+  hash.vector[!(hash.vector %in% training.dictionary$hash)] = hash("<UNK>")
   hash.vector
 }
 

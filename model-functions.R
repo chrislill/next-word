@@ -42,7 +42,7 @@ CreateTrigrams <- function(tokens) {
   
   # tokens <- dev.tokens[[5]]
 
-  # tokens <- hash(tokens)
+  tokens <- hash(tokens)
     
   word.2 <- vector(mode = "integer")
   word.1 <- vector(mode = "integer")
