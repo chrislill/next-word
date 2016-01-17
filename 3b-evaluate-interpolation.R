@@ -9,8 +9,8 @@ load("models\\training-quadgram-model.RData")
 load("data\\val-ngrams.RData")
 
 # These coefficients will need to be tuned
-lambda.trigram <- 0.2
-lambda.quadgram <- 0
+lambda.trigram <- 0.8
+lambda.quadgram <- 0.5
 
 
 # Initialise metrics

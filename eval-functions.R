@@ -8,8 +8,8 @@ require(hashr)
 # load("models\\training-quadgram-model.RData")
 
 # These coefficients will need to be tuned
-coefficient.trigram <- 0.6
-coefficient.quadgram <- 0.3
+coefficient.trigram <- 0.8
+coefficient.quadgram <- 0.5
 
 
 DLookup <- function(x) {
