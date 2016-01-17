@@ -96,9 +96,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.model = NA,
                      accuracy,
                      top.5.accuracy,
-                     comment = paste("Test with with lambda.tri =", 
-                                     lambda.trigram, "& lambda.quad =", 
-                                     lambda.quadgram))
+                     comment = paste("Rerun interpolated model without single letters"))
 load("data\\metrics.RData")
 metrics <- rbind(metrics, this.metric)
 save(metrics, file = "data\\metrics.RData")
