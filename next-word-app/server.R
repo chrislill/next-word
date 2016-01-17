@@ -4,7 +4,9 @@ source("tokenise-functions.R", local = TRUE)
 source("eval-functions.R", local = TRUE)
 
 load("training-dictionary.RData")
+load("training-bigram-model.RData")
 load("training-trigram-model.RData")
+load("training-quadgram-model.RData")
 
 shinyServer(function(input, output, session) {
   
@@ -13,17 +15,37 @@ shinyServer(function(input, output, session) {
   observeEvent(input$sentence, {
     tokens <- unlist(TokeniseText(input$sentence))
     tokens.length <- length(tokens)
-    if(tokens.length > 1) {
+    
+    if(tokens.length > 2) {
+      # Use the interpolated model
       hash.tokens <- ReplaceUnknownHashes(hash(
-        tokens[(tokens.length - 1):tokens.length]),
-        training.dictionary$hash)
-      prediction <- unlist(trigram.model[
-        word.1 == hash.tokens[2] & word.2 == hash.tokens[1], 
-        3:12, with = FALSE])
+        tokens[(tokens.length - 2):tokens.length]))
+      
+      answers <- InterpolateModels(hash.tokens)
+      
+      control$answers[1:5] <- unlist(answers[1:5, "word"])
+      control$prob[1:5] <- unlist(answers[1:5, "interpolated"])
+    } else if(tokens.length == 0){
+      # Clear the values if there is no text
+      control$answers[1:5] <- ""
+      control$prob[1:5] <- ""          
+    } else {
+      hash.tokens <- ReplaceUnknownHashes(hash(tokens))
+      if(tokens.length == 2) {
+        # Use the trigram model
+        prediction <- unlist(trigram.model[
+          word.1 == hash.tokens[2] & word.2 == hash.tokens[1], 
+          3:12, with = FALSE])        
+      } else {
+        # Use the bigram model
+        prediction <- unlist(bigram.model[
+          word.1 == hash.tokens[1], 
+          2:11, with = FALSE])         
+      }
       control$answers <- DLookup(prediction[1:5])
       control$prob <- round(prediction[6:10] * 100)
       control$answers[is.na(control$answers)] <- ""
-      control$prob[is.na(control$prob)] <- ""
+      control$prob[is.na(control$prob)] <- "" 
     }
   })
   
@@ -39,19 +61,7 @@ shinyServer(function(input, output, session) {
     control$prob <- rep("", 5)
   })
   
-#   output$tokens <- renderText({
-#     paste(unlist(TokeniseText(input$sentence)))
-#   })
-#   
-#   output$answers <- renderText({
-#     paste(control$answers)
-#   })
-#   
-#   output$clicked <- renderText({
-# #     if (is.null(choice$word)) return ("bob")
-#     choice$word
-#   })
-  
+
   # The javascript function only seems to need to be called once - probably
   # because the buttons are refreshed when the user clicks an answer
   output$button1 <- renderUI({list(actionButton("answer1", 

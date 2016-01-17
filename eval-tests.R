@@ -13,8 +13,13 @@ expect_equal(DLookup(h[1:2]), c("return", "it"))
 expect_true(is.na(DLookup(NA)))
 
 # Test InterpolateModels() ----------------------------------------------------
-trigram <- c("to", "the", "sea")
+golden.trigram <- hash(c("am", "a", "golden"))
+fri.trigram <- hash(c("hello", "my", "fri"))
 
-expect_equal(InterpolateModels(trigram), "shore")
+expect_gte(nrow(InterpolateModels(golden.trigram)), 7)
+expect_gte(nrow(InterpolateModels(fri.trigram)), 5)
+
+
+
 
 
