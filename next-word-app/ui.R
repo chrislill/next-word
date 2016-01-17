@@ -6,7 +6,7 @@ shinyUI(
     titlePanel("Next Word Prediction"),
     mainPanel(
       p("Type a word to get started..."),
-      textInput("sentence", NULL, width = "800px"),
+      textInput("sentence", NULL, width = "100%"),
 
       fluidRow(
         div(align = "center",
