@@ -9,7 +9,7 @@ load("models\\training-quadgram-model.RData")
 load("data\\val-ngrams.RData")
 
 # These coefficients will need to be tuned
-lambda.trigram <- 0
+lambda.trigram <- 0.2
 lambda.quadgram <- 0
 
 
@@ -51,12 +51,13 @@ ngram.inputs <- rbindlist(list(bigram.inputs, trigram.inputs, quadgram.inputs),
                           use.names = TRUE)
 rm(bigram.inputs, trigram.inputs, quadgram.inputs)
 setkey(ngram.inputs, word.1, word.2, word.3)
+setorder(ngram.inputs, word.1, word.2, word.3, answer)
 ngram.inputs <- unique(ngram.inputs[, pr := sum(pr),
                                      by = .(word.1, word.2, word.3, answer)])
-setorder(ngram.inputs, word.1, word.2, word.3, -pr)
 
 
 # Add rank, so that we can return the top 5 rows 
+setorder(ngram.inputs, word.1, word.2, word.3, -pr)
 ngram.inputs[, rank:=(1:.N), by=.(word.1, word.2, word.3)]
 
 
@@ -95,7 +96,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.model = NA,
                      accuracy,
                      top.5.accuracy,
-                     comment = paste("Interpolate with lambda.tri =", 
+                     comment = paste("Test with with lambda.tri =", 
                                      lambda.trigram, "& lambda.quad =", 
                                      lambda.quadgram))
 load("data\\metrics.RData")
