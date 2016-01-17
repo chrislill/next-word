@@ -16,11 +16,15 @@ CreateDictionary <- function(word.token.list, max.length) {
   word <- unlist(word.token.list, use.names = FALSE)
   
   word.count <- unique(data.table(word)[, count:=.N, by = word])
+  
+  # Remove single letters other than a and i, because these are likely to come
+  # from abbreviations and aren't valuable in predictions
+  word.count <- word.count[nchar(word) > 1 | word %in% c("a", "i")]
   setorder(word.count, -count)
 
   # Calculate the minimum word frequency to achieve a dictionary size of max.length
   # If there are less than max.length records, use 2, so we omit unique words
-  # Remove a couple (around 3) of lower frequency words with a duplicate hash
+  # This affects a couple (around 3) of lower frequency words with a repeated hash
   min.frequency <- word.count[max.length, count]
   if(is.na(min.frequency)) min.frequency = 2
   

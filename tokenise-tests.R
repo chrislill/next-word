@@ -30,6 +30,7 @@ expect_equal(nrow(dev.dictionary[word == "the"]), 1)
 expect_equal(dev.dictionary[word == "the", hash], hash("the"))
 expect_equal(nrow(dev.dictionary[word == "mixologymashup"]), 0)
 expect_equal(nrow(short.dictionary), 10)
+expect_equal(nrow(dev.dictionary[nchar(word) == 1]), 2)
 
 
 # Test RemoveUnknownWords() ---------------------------------------------------

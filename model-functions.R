@@ -129,10 +129,7 @@ CountBigrams <- function(token.list) {
   #
   # Returns:
   #   A bigram frequency data.table
-  
-  # Test data:
-  # token.list <- dev3.tokens
-  
+
   bigram.list <- sapply(token.list, 
                          CreateBigrams, 
                          simplify = "array", 
@@ -157,9 +154,6 @@ CountTrigrams <- function(token.list) {
   #
   # Returns:
   #   A trigram frequency data.table
-  
-  # Test data:
-  # token.list <- dev.tokens
   
   trigram.list <- sapply(token.list, 
                          CreateTrigrams, 
@@ -186,11 +180,6 @@ CountQuadgrams <- function(token.list) {
   # Returns:
   #   A quadgram frequency data.table
   
-  # Test data:
-  # token.list <- dev3.tokens
-  
-  # TODO: Refactor CreateQuadgrams() to hash word1, word2 and word3
-  # TODO: Or hash word4 and use the dictionary as a lookup
   quadgram.list <- sapply(token.list, 
                          CreateQuadgrams, 
                          simplify = "array", 
