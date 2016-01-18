@@ -2,7 +2,9 @@ library(shiny)
 
 shinyUI(
   fluidPage(
-    tags$head(tags$script(src="helper.js")),
+    tags$head(#tags$link(rel = "stylesheet", type = "text/css", 
+              #          href = "bootstrap-sandstone.css"),
+              tags$script(src="helper.js")),
     titlePanel("Next Word Prediction"),
     mainPanel(
       p("Type a word to get started..."),
