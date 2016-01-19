@@ -11,7 +11,9 @@ load("training-quadgram-model.RData")
 shinyServer(function(input, output, session) {
   
   control <- reactiveValues()
-
+  options(xtable.include.rownames=F)
+  options(xtable.include.colnames=T)
+  
   observeEvent(input$sentence, {
     tokens <- unlist(TokeniseText(input$sentence))
     tokens.length <- length(tokens)
@@ -24,11 +26,25 @@ shinyServer(function(input, output, session) {
       answers <- InterpolateModels(hash.tokens)
       
       control$answers[1:5] <- unlist(answers[1:5, "word"])
-      control$prob[1:5] <- unlist(answers[1:5, "interpolated"])
+      control$prob[1:5] <- paste0(round(unlist(answers[1:5, "interpolated"]) * 100), "%")
+      
+      three.tokens <- paste(tokens[tokens.length - 2], 
+                            tokens[tokens.length - 1],
+                            tokens[tokens.length])
+
+      answers <- answers %>%
+        mutate(word = paste(three.tokens, word)) %>%
+        rename(Phrase = word)
+      
+      output$probtable <- renderTable(answers, align = c("l", "l", rep("c", 4)))
+      
     } else if(tokens.length == 0){
       # Clear the values if there is no text
       control$answers[1:5] <- ""
-      control$prob[1:5] <- ""          
+      control$prob[1:5] <- ""
+      
+      output$probtable = renderTable(NULL)
+      
     } else {
       hash.tokens <- ReplaceUnknownHashes(hash(tokens))
       if(tokens.length == 2) {
@@ -36,17 +52,33 @@ shinyServer(function(input, output, session) {
         prediction <- unlist(trigram.model[
           word.1 == hash.tokens[2] & word.2 == hash.tokens[1], 
           3:12, with = FALSE])        
-      } else {
+
+        control$answers <- DLookup(prediction[1:5])
+        control$prob <- paste0(round(prediction[6:10] * 100), "%")
+        control$answers[is.na(control$answers)] <- ""
+        control$prob[control$prob == "NA%"] <- ""
+        
+        output$probtable = renderTable(data.table(
+          Phrase = paste(tokens[1], tokens[2], control$answers), 
+          trigram = prediction[6:10]), align = c("l", "l", "c"))
+        } else {
         # Use the bigram model
         prediction <- unlist(bigram.model[
           word.1 == hash.tokens[1], 
-          2:11, with = FALSE])         
+          2:11, with = FALSE])   
+        
+        control$answers <- DLookup(prediction[1:5])
+        control$prob <- paste0(round(prediction[6:10] * 100), "%")
+        control$answers[is.na(control$answers)] <- ""
+        control$prob[control$prob == "NA%"] <- ""
+        
+        output$probtable = renderTable(data.table(
+          Phrase = paste(tokens[1], control$answers), 
+          bigram = prediction[6:10]), align = c("l", "l", "c"))
       }
-      control$answers <- DLookup(prediction[1:5])
-      control$prob <- round(prediction[6:10] * 100)
-      control$answers[is.na(control$answers)] <- ""
-      control$prob[is.na(control$prob)] <- "" 
+
     }
+    
   })
   
   observeEvent(input$answer1, {updateTextInput(session, "sentence", value = paste(input$sentence, control$answers[1])) })
@@ -76,10 +108,10 @@ shinyServer(function(input, output, session) {
   output$button5 <- renderUI({actionButton("answer5", 
                                            label = control$answers[5]) })
   
-  output$prob1 <- renderText({paste0(control$prob[1], "%") })
-  output$prob2 <- renderText({paste0(control$prob[2], "%") })
-  output$prob3 <- renderText({paste0(control$prob[3], "%") })
-  output$prob4 <- renderText({paste0(control$prob[4], "%") })
-  output$prob5 <- renderText({paste0(control$prob[5], "%") })
+  output$prob1 <- renderText({control$prob[1] })
+  output$prob2 <- renderText({control$prob[2] })
+  output$prob3 <- renderText({control$prob[3] })
+  output$prob4 <- renderText({control$prob[4] })
+  output$prob5 <- renderText({control$prob[5] })
 
 })

@@ -31,8 +31,16 @@ shinyUI(
             )
         ),
       
-      div(style = "height: 50px;"),
-      actionButton("reset", "Start again", style = "color: #ffffff; background-color: #777777; border-color: #777777;"),
+      div(style = "height: 30px;"),
+      
+      checkboxInput("toggle", "Show probability table"),
+      
+      conditionalPanel("input.toggle == 1", 
+                       tableOutput("probtable")
+                       ),
+      
+      actionButton("reset", "Start again", 
+                   style = "color: #ffffff; background-color: #777777; border-color: #777777;"),
       div(style = "height: 30px;"),
       
       "Initial ",

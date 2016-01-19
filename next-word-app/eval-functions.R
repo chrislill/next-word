@@ -89,7 +89,7 @@ InterpolateModels <- function(hash.trigram) {
     }
   }
   answer <- answer[order(answer$interpolated, decreasing = TRUE), ]
-  answer$interpolated <- round(answer$interpolated * 100)
+  answer$interpolated <- round(answer$interpolated, 3)
 
   answer
 }
