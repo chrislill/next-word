@@ -96,7 +96,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.model = NA,
                      accuracy,
                      top.5.accuracy,
-                     comment = paste("Rerun interpolated model without single letters"))
+                     comment = paste("Interpolated model with 10000 Dictionary size"))
 load("data\\metrics.RData")
 metrics <- rbind(metrics, this.metric)
 save(metrics, file = "data\\metrics.RData")

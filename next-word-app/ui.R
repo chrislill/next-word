@@ -2,8 +2,8 @@ library(shiny)
 
 shinyUI(
   fluidPage(
-    tags$head(#tags$link(rel = "stylesheet", type = "text/css", 
-              #          href = "bootstrap-sandstone.css"),
+    tags$head(tags$link(rel = "stylesheet", type = "text/css", 
+                        href = "little-changes.css"),
               tags$script(src="helper.js")),
     titlePanel("Next Word Prediction"),
     mainPanel(
@@ -31,14 +31,16 @@ shinyUI(
             )
         ),
       
-      div(style = "height: 30px;"),
-      actionButton("reset", "Start again"),
+      div(style = "height: 50px;"),
+      actionButton("reset", "Start again", style = "color: #ffffff; background-color: #777777; border-color: #777777;"),
       div(style = "height: 30px;"),
       
-      a("Exploratory analysis of the dataset", 
+      "Initial ",
+      a("exploratory analysis", 
         href = "http://rpubs.com/chrislill/nextwordmilestone" ),
       br(),
-      a("Source code on github", 
+      "Source code on ",
+      a("github", 
         href = "https://github.com/chrislill/next-word"),
       tags$script("focusOnTextBox()")
       )
