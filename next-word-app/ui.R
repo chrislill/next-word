@@ -43,6 +43,9 @@ shinyUI(
                    style = "color: #ffffff; background-color: #777777; border-color: #777777;"),
       div(style = "height: 30px;"),
       
+      "Capstone project",
+      a("final report", href = "http://rpubs.com/chrislill/next-word"),
+      br(),
       "Initial ",
       a("exploratory analysis", 
         href = "http://rpubs.com/chrislill/nextwordmilestone" ),

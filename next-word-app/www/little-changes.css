@@ -1,8 +1,6 @@
-@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700");
-
 .container-fluid {
     margin-left: 75px;
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 h2 {
@@ -10,14 +8,14 @@ h2 {
 }
 
 .col-sm-8 {
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 .checkbox label {
     vertical-align: middle;
 }
 
-table.data {
+.data {
     width: 100%;
 }
 

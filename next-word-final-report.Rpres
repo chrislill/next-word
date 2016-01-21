@@ -1,0 +1,58 @@
+Next Word Prediction
+========================================================
+## Final Report
+
+&nbsp;
+
+A model and website for Natural Language Prediction.  
+Created for the Data Science Capstone project,  
+from Coursera and John Hopkins University.  
+
+Chris Lill  
+21 January 2016
+
+
+Objective
+========================================================
+
+To use a collection of 4 million tweets, blogs and news articles to predict the next word that a user will type.
+
+![Screenshot of application which has the input of "What a beautiful" and is predicting "day"](app-screenshot.png)
+
+http://chrislill.shinyapps.io/next-word
+
+
+Approach
+========================================================
+
+The text was simplified and a count was made for each instance of 2, 3 or 4 consecutive words. The probability was calculated for the top 5 answers for each phrase.
+
+|Model        | word-3 | word-2 | word-1    | answer | probability|
+|-------------|:------:|:------:|:---------:|:------:|-----------:|
+|Bigram       |        |        | beautiful | *day*  | 9%         |
+|Trigram      |        | a      | beautiful | *day*  | 22%        |
+|Quadgram     | what   | a      | beautiful | *day*  | 44%        |
+|Interpolated | what   | a      | beautiful | *day*  | 34%        |
+
+Optimization of the model to fit the validation set gave:
+
+$$P_{interpolated} = 0.8 P_{quadgram} + 0.16 P_{trigram} + 0.04P_{bigram}$$
+
+
+Features
+========================================================
+* The model has a accuracy of XX%.
+* Five answers are displayed with an total accuracy of XX%.
+* Suggestions are returned whilst the user types.
+* A probability table shows answers for each model.
+![Probability table with five answers for "What a beautiful"](app-probability.png)
+
+
+Improvements
+========================================================
+Ideas for improving the accuracy of the model include:
+* Store more than the first five answers for each n-gram.
+* Introduce a Beginning of Sentence `<BOS>` tag into the model to improve the prediction of the first three words.
+* Use more data from a source such as [Google ngrams](https://books.google.com/ngrams).
+* Incorporate Part Of Speech tagging into each model. This is the approach that I'm most excited about trying.
+
