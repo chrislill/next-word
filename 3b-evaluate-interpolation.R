@@ -10,7 +10,7 @@ load("data\\val-ngrams.RData")
 
 # These coefficients will need to be tuned
 lambda.trigram <- 0.8
-lambda.quadgram <- 0.5
+lambda.quadgram <- 0.6
 
 
 # Initialise metrics
@@ -96,7 +96,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.model = NA,
                      accuracy,
                      top.5.accuracy,
-                     comment = paste("Interpolated model with 10000 Dictionary size"))
+                     comment = paste("Retune with lambda.tri = ", lambda.trigram, " & lambda.quad = ", lambda.quadgram))
 load("data\\metrics.RData")
 metrics <- rbind(metrics, this.metric)
 save(metrics, file = "data\\metrics.RData")

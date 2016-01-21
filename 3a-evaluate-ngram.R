@@ -1,3 +1,4 @@
+library(data.table)
 library(dplyr)
 
 # Load model ------------------------------------------------------------------
@@ -6,7 +7,7 @@ library(dplyr)
 # load("models\\training-trigram-model.RData")
 # load("models\\training-quadgram-model.RData")
 load("data\\val-ngrams.RData")
-model <- trigram.model
+model <- quadgram.model
 
 eval.start <- Sys.time()
 

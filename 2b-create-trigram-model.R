@@ -35,7 +35,7 @@ this.metric <- cbind(start.time = format(start.time),
                      mem.model,
                      accuracy = NA,
                      top.5.accuracy = NA,
-                     comment = "Trigram with 8000 Dictionary size")
+                     comment = "Trigram with 16000 Dictionary size")
 if(file.exists("data\\metrics.RData")) {
   load("data\\metrics.RData")
   metrics <- rbind(metrics, this.metric)

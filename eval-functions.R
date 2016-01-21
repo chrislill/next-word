@@ -33,7 +33,7 @@ InterpolateModels <- function(hash.trigram) {
   
   # These coefficients have been tuned
   lambda.trigram <- 0.8
-  lambda.quadgram <- 0.5
+  lambda.quadgram <- 0.6
 
   row.bigram <- unlist(bigram.model[word.1 == hash.trigram[3],
                                     2:11, with = FALSE])

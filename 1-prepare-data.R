@@ -67,10 +67,10 @@ if(!file.exists("data\\training-all-tokens.RData")) {
 }
 
 # Create dictionary with frequent words ---------------------------------------
-# dev.dictionary <- CreateDictionary(dev.tokens, 20000)
-# dev2.dictionary <- CreateDictionary(dev2.tokens, 20000)
-# dev3.dictionary <- CreateDictionary(dev3.tokens, 20000)
-training.dictionary <- CreateDictionary(training.all.tokens, 8000)
+# dev.dictionary <- CreateDictionary(dev.tokens, 8000)
+# dev2.dictionary <- CreateDictionary(dev2.tokens, 8000)
+# dev3.dictionary <- CreateDictionary(dev3.tokens, 8000)
+training.dictionary <- CreateDictionary(training.all.tokens, 16000)
 
 save(training.dictionary, file = "models\\training-dictionary.RData")
 
