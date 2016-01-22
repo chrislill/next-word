@@ -3,15 +3,21 @@ library(dplyr)
 
 # Load model ------------------------------------------------------------------
 # load("models\\training-dictionary.RData")
+
+# INSTRUCTIONS: Only load one model at a time
 # load("models\\training-bigram-model.RData")
 # load("models\\training-trigram-model.RData")
 # load("models\\training-quadgram-model.RData")
 load("data\\val-ngrams.RData")
-model <- quadgram.model
+# load("data\\test-ngrams.RData")
 
-eval.start <- Sys.time()
+# INSTRUCTIONS: Change this line to select the model to be evaluated
+model <- bigram.model
+
 
 # Evaluate --------------------------------------------------------------------
+eval.start <- Sys.time()
+
 val.results <- model[val.ngrams]
 val.results[, accuracy:=(outcome == answer_1)]
 

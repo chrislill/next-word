@@ -20,10 +20,10 @@ save(val.ngrams, file = "data\\val-ngrams.RData")
 
 # Repeat for test set ---------------------------------------------------------
 # test.ngrams <- BuildValNgramTable(test.tokens)
-# test.ngrams[, 1:4] <- lapply(test.ngrams[, .(word.1, word.2, word.3, outcome)],
-#                             ReplaceUnknownHashes,
-#                             dictionary = training.dictionary$hash)
+# test.ngrams[, 1:3] <- lapply(test.ngrams[, .(word.3, word.2, word.1)],
+#                             ReplaceUnknownHashes)
 # test.ngrams <- unique(test.ngrams[, count := sum(count), 
-#                                   by = .(word.1, word.2, word.3, outcome)])
+#                                 by = .(word.1, word.2, word.3, outcome)])
+# setkey(test.ngrams, "word.1", "word.2", "word.3")
 # save(test.ngrams, file = "data\\test-ngrams.RData")
 

@@ -136,7 +136,7 @@ CountBigrams <- function(token.list) {
                          USE.NAMES = FALSE)
   
   bigram.dt <- data.table(do.call(rbind, bigram.list))
-  names(bigram.dt) <- c("word.1", "answer")
+  setnames(bigram.dt, 1:2, c("word.1", "answer"))
   
   bigram.count <- unique(bigram.dt[, count:=.N, by = .(word.1, answer)])
   setorder(bigram.count, word.1, -count)
@@ -161,7 +161,7 @@ CountTrigrams <- function(token.list) {
                          USE.NAMES = FALSE)
   
   trigram.dt <- data.table(do.call(rbind, trigram.list))
-  names(trigram.dt) <- c("word.2", "word.1", "answer")
+  setnames(trigram.dt, 1:3, c("word.2", "word.1", "answer"))
   
   trigram.count <- unique(trigram.dt[, count:=.N, by = .(word.1, word.2, answer)])
   setorder(trigram.count, word.1, word.2, -count)
@@ -186,8 +186,8 @@ CountQuadgrams <- function(token.list) {
                          USE.NAMES = FALSE)
 
   quadgram.dt <- data.table(do.call(rbind, quadgram.list))
-  names(quadgram.dt) <- c("word.3", "word.2", "word.1", "answer")
-  
+  setnames(quadgram.dt, 1:4, c("word.3", "word.2", "word.1", "answer"))
+
   quadgram.count <- unique(quadgram.dt[, count:=.N,
                                        by = .(word.3, word.2, word.1, answer)])
   setorder(quadgram.count, word.1, word.2, word.3, -count)
