@@ -34,7 +34,7 @@ The text was simplified and a count was made for each instance of 2, 3 or 4 cons
 |Quadgram     | what   | a      | beautiful | *day*  | 44%        |
 |Interpolated | what   | a      | beautiful | *day*  | 34%        |
 
-Optimization of the model to fit the validation set gave:
+[Optimization of the model](http://rpubs.com/chrislill/next-word-metrics) to fit the validation set gave:
 
 $$P_{interpolated} = 0.8 P_{quadgram} + 0.16 P_{trigram} + 0.04P_{bigram}$$
 
@@ -42,9 +42,9 @@ $$P_{interpolated} = 0.8 P_{quadgram} + 0.16 P_{trigram} + 0.04P_{bigram}$$
 Features
 ========================================================
 * Suggestions are returned whilst the user types.
-* Click a button to add a word.
-* The model has a accuracy of XX%.
-* Five answers are displayed with an total accuracy of XX%.
+* Click a suggestion to add it to the text.
+* The model has an accuracy of 18%.
+* Five answers are displayed with an total accuracy of 34%.
 * A probability table shows answers for each model.
 ![Probability table with five answers for "What a beautiful"](app-probability.png)
 

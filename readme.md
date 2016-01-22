@@ -9,6 +9,7 @@ The R scripts in the root of this repository provide the following functionality
     * 60% training set
     * 30% validation set
     * 10% test set
+    * Note: The final model uses a 90% training set for improved accuracy
 2. Tokenise the text by
     * Changing to lowercase
     * Replace numeric characters with a space
@@ -23,8 +24,8 @@ The R scripts in the root of this repository provide the following functionality
 9. Store the counts of each n-gram in a data.table (to reduce processing time)
 10. Summarise the top 5 answers and probabilities for each 1-gram, 2-gram and 3-gram
 11. Create a summary of the unique 4-grams in the validation or test set, and their frequency
-12. Evaluate the accuracy of each ngram model
-13. Evaluate the accuracy of an interpolated model
+12. Evaluate the accuracy of each ngram model, and [record metrics](http://rpubs.com/chrislill/next-word-metrics)
+13. Evaluate the accuracy of an interpolated model, and [record metrics](http://rpubs.com/chrislill/next-word-metrics)
     * The coefficients selected to optimise efficiency on the validation set are:
     * lambda.trigram = 0.6
     * lambda.quadgram = 0.8
