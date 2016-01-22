@@ -11,7 +11,7 @@ shinyUI(
       textInput("sentence", NULL, width = "100%"),
 
       fluidRow(
-        div(align = "center",
+        div(align = "center", 
             column(2,
                    uiOutput("button1"),
                    textOutput("prob1"),

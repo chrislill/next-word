@@ -11,6 +11,11 @@ h2 {
     padding-left: 0;
 }
 
+.btn {
+    background-color: #f8f8f8;
+}
+
+
 .checkbox label {
     vertical-align: middle;
 }
