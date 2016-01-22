@@ -1,0 +1,22 @@
+---
+title: "Next word model metrics"
+author: "Chris Lill"
+date: "22 January 2016"
+output: html_document
+---
+
+This additional document shows the memory usage and accuracy metrics for each model built during the Data Science Capstone project. The most recent results show the tuning of the model. Earlier results show how I experimented with different approaches using a smaller data set.
+
+```{r metrics, echo=FALSE}
+options(width = 2000)
+library(knitr)
+load("..\\data\\metrics.RData")
+metrics <- metrics[order(metrics$start.time, decreasing = TRUE), ]
+metrics[is.na(metrics$mem.before), 4:6] <- c("", "", "")
+metrics[is.na(metrics$accuracy), 7:8] <- c("", "")
+metrics[is.na(metrics$top.5.accuracy), 8] <- ""
+kable(metrics, row.names = FALSE, 
+      col.names = c("Time", "Records", "Run time", "Memory before", 
+                    "Memory after", "Model size", "Accuracy", 
+                    "Top 5 Accuracy", "Comment"))
+```

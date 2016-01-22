@@ -41,9 +41,10 @@ $$P_{interpolated} = 0.8 P_{quadgram} + 0.16 P_{trigram} + 0.04P_{bigram}$$
 
 Features
 ========================================================
+* Suggestions are returned whilst the user types.
+* Click a button to add a word.
 * The model has a accuracy of XX%.
 * Five answers are displayed with an total accuracy of XX%.
-* Suggestions are returned whilst the user types.
 * A probability table shows answers for each model.
 ![Probability table with five answers for "What a beautiful"](app-probability.png)
 
