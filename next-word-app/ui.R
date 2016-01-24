@@ -15,19 +15,23 @@ shinyUI(
             column(2,
                    uiOutput("button1"),
                    textOutput("prob1"),
-                   offset = 1),
+                   class = "col-sm-2 col-xs-4 col-sm-offset-1"),
             column(2,
                    uiOutput("button2"),
-                   textOutput("prob2")),
+                   textOutput("prob2"),
+                   class = "col-sm-2 col-xs-4"),
             column(2,
                    uiOutput("button3"),
-                   textOutput("prob3")),
+                   textOutput("prob3"),
+                   class = "col-sm-2 col-xs-4"),
             column(2,
                    uiOutput("button4"),
-                   textOutput("prob4")),
+                   textOutput("prob4"),
+                   class = "col-sm-2 col-xs-4"),
             column(2,
                    uiOutput("button5"),
-                   textOutput("prob5"))
+                   textOutput("prob5"),
+                   class = "col-sm-2 col-xs-4")
             )
         ),
       
