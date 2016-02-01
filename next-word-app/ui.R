@@ -7,7 +7,7 @@ shinyUI(
               tags$script(src="helper.js")),
     titlePanel("Next Word Prediction"),
     mainPanel(
-      p("Type a word to get started..."),
+      p("Type a phrase, then click a suggestion..."),
       textInput("sentence", NULL, width = "100%"),
 
       fluidRow(
